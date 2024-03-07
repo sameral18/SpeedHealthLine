@@ -1,0 +1,71 @@
+{% extends 'homebase.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+<style media="screen">
+ .jumbotron {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background: linear-gradient(to right, #a41515, #3875d7); /* تطبيق الخلفية المتدرجة */
+}
+
+
+  .jumbotron h5,
+  h3 {
+    text-align: center;
+    color: #333; /* تغيير لون النص إلى اللون الرمادي الداكن */
+  }
+
+  .alert {
+    margin: 0px;
+  }
+
+  .glow {
+    font-size: 50px;
+    color: #121212; /* تغيير لون النص الذي يتألق إلى اللون البرتقالي */
+    text-align: center;
+    -webkit-animation: glow 0.5s ease-in-out infinite alternate; /* تقليل زمن الوميض إلى 0.5 ثانية */
+    -moz-animation: glow 0.5s ease-in-out infinite alternate;
+    animation: glow 0.5s ease-in-out infinite alternate;
+  }
+
+  @-webkit-keyframes glow {
+    from {
+      text-shadow: 0 0 10px #eeeeee, 0 0 20px #000000, 0 0 30px #000000, 0 0 40px #000000, 0 0 50px #9554b3, 0 0 60px #9554b3, 0 0 70px #9554b3;
+    }
+
+    to {
+      text-shadow: 0 0 20px #eeeeee, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+    }
+  }
+
+  /* Add linear gradient to the button */
+  .btn-primary {
+    background: linear-gradient(to right, #5E8B7E, #8A2BE2); /* تطبيق الخلفية المتدرجة للزر */
+    border: none;
+  }
+</style>
+</head>
+<br>
+<br>
+
+<div class="jumbotron" style="margin-bottom: 0px; margin-top: 0px; text-align: center;">
+  <br>
+  <h5 class="display-3 glow">جملة مناسبة</h5>
+  <br><br><br><br><br>
+  <p>
+    <h4 class="display-3 glow">Emergency ?</h4>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" href="/index" role="button">Take Appointment</a>
+    </p>
+    <br>
+</div>
+
+<br><br><br><br>
+
+{% include "admin_doctor_patient_card.html" %}
+<br><br><br>
+
+{% endblock content %}

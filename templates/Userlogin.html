@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>SpeedHealthLine</title>
+
+
+<style type="text/css">
+    body {
+      color: #aa082e;
+      background: linear-gradient(to right, #888888, #5E8B7E, #8A2BE2); /* Apply linear gradient to the body background */
+      font-family: 'Roboto', sans-serif;
+    }
+
+    a:link {
+      text-decoration: none;
+    }
+
+    .note {
+      text-align: center;
+      height: 80px;
+      background: linear-gradient(to right, #0072ff, #8811c5);
+      color: #570808;
+      font-weight: bold;
+      line-height: 80px;
+    }
+
+    .text-glow {
+      color: #3875d7;
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6, 0 0 100px #ff4da6, 0 0 150px #ff4da6;
+    }
+
+    .note p {
+      background: linear-gradient(to right, #4a90e2, #d01c52);
+      color: #a41515;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .form-content {
+      padding: 5%;
+      border: 1px solid #993300;
+      margin-bottom: 2%;
+    }
+
+    .form-control {
+      border-radius: 1.5rem;
+    }
+
+    .btnSubmit {
+      border: none;
+      border-radius: 1.5rem;
+      padding: 1%;
+      width: 20%;
+      cursor: pointer;
+      background: linear-gradient(to right, #4a90e2, #d01c52);
+      color: #000000;
+    }
+</style>
+
+
+</head>
+
+<body>
+  {% include "navbar.html" %}
+  <br>
+  <br>
+  <br><br>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="container register-form">
+      <div class="form">
+        <div class="note">
+          <p>User Login Page</p>
+        </div>
+
+        <div class="form-content">
+          <div class="row">
+            <div class="col-md-6">
+
+              <div class="form-group">
+                {% render_field form.username class="form-control" placeholder="Username" %}
+              </div>
+
+            </div>
+            <div class="col-md-6">
+
+              <div class="form-group">
+                {% render_field form.password class="form-control" placeholder="Password" %}
+              </div>
+
+            </div>
+          </div>
+          <button type="submit" class="btnSubmit">Login</button>
+          <div class="text-center">
+            <p>Do not have account? <a href="Userclick">Return To Signup</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br><br><br>
+
+
+  {% include "footer.html" %}
+</body>
+
+</html>
