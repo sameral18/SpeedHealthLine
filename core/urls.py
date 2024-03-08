@@ -21,7 +21,7 @@ urlpatterns = [
     path('Userclick', Userclick),
     path('adminsignup', admin_signup),
     path('doctorsignup', doctor_signup, name='doctorsignup'),
-    path('patientsignup', patient_signup),
+    path('patientsignup', patientsignup),
     path('Userlogin', LoginView.as_view(template_name='Userlogin.html'), name='Userlogin'),
 
 

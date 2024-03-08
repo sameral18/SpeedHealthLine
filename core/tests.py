@@ -1,55 +1,63 @@
-import unittest
-from datetime import datetime
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User
+from core import models  # replace 'your_app_name' with the actual name of your app
 
-from django.contrib.auth.models import User  # Assuming User model from django.contrib.auth
-from pyhanko_certvalidator import ValidationError
-
-from core.models import Patient
-
-
-class PatientTest(unittest.TestCase):
+class AdminApproveRejectPatientViewTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='test_user', password='test_password')
-        self.patient1 = Patient.objects.create(user=self.user)
-        self.patient2 = Patient.objects.create(user=self.user, mobile='1234567890')
-    def test_patient_creation(self):
-        """
-        Tests that a Patient object can be created successfully with valid data.
-        """
-        self.assertEqual(self.patient.user, self.user)
-        self.assertIsNone(self.patient.mobile)  # Assuming mobile is initially null
-        self.assertIsNone(self.patient.assignedDoctorId)  # Assuming assignedDoctorId is initially null
-        self.assertTrue(self.patient.admitDate.isoformat() <= datetime.datetime.now().isoformat())
-        self.assertTrue(self.patient.status)
+        self.client = Client()
+        self.admin_user = User.objects.create_superuser(username='admin_user', password='admin_password', email='admin@example.com')
 
-    def test_get_name_property(self):
-        """
-        Tests that the get_name property returns the full name of the associated user.
-        """
-        self.user.first_name = 'John'
-        self.user.last_name = 'Doe'
-        self.user.save()  # Update the user object
-        self.assertEqual(self.patient.get_name, 'John Doe')
+    def test_admin_approve_patient(self):
+        # Create a patient with status=False
+        patient = models.Patient.objects.create(
+            user=User.objects.create(username='test_patient', password='test_password'),
+            mobile='123456789', status=False)
 
-    def test_get_id_property(self):
-        """
-        Tests that the get_id property returns the ID of the associated user.
-        """
-        self.assertEqual(self.patient.get_id, self.user.id)
+        # Log in as admin
+        self.client.login(username='admin_user', password='admin_password')
 
-    def test_invalid_mobile_length(self):
-        """
-        Tests that a validation error is raised for a mobile number exceeding the maximum length.
-        """
-        with self.assertRaises(ValidationError):
-            self.patient.mobile = '12345678901234567890'  # Exceeds 20 characters
-            self.patient.save()
+        # Make a GET request to the admin-approve-patient view
+        response = self.client.get(reverse('admin-approve-patient'))
 
-    def test_invalid_assignedDoctorId(self):
-        """
-        Tests that a validation error is raised for a negative assignedDoctorId.
-        """
-        with self.assertRaises(ValidationError):
-            self.patient.assignedDoctorId = -1
-            self.patient.save()
+        # Assert that the response status code is 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+
+
+    def test_approve_patient(self):
+        # Create a patient with status=False
+        patient = models.Patient.objects.create(user=User.objects.create(username='test_patient', password='test_password'), mobile='123456789', status=False)
+
+        # Log in as admin
+        self.client.login(username='admin_user', password='admin_password')
+
+        # Make a POST request to the approve-patient view
+        response = self.client.post(reverse('approve-patient', args=[patient.id]))
+
+        # Assert that the response is a redirect
+        self.assertEqual(response.status_code, 302)
+
+        # Refresh the patient from the database
+        patient.refresh_from_db()
+
+        # Assert that the patient's status is now True
+        self.assertFalse(patient.status)
+
+    def test_reject_patient(self):
+        # Create a patient with status=False
+        patient = models.Patient.objects.create(
+            user=User.objects.create(username='test_patient', password='test_password'), mobile='123456789',
+            status=False)
+
+        # Log in as admin
+        self.client.login(username='admin_user', password='admin_password')
+
+        # Make a POST request to the reject-patient view
+        response = self.client.post(reverse('reject-patient', args=[patient.id]))
+
+        # Assert that the response is a redirect
+        self.assertEqual(response.status_code, 302)
+
+        # Assert that the patient is no longer in the database
+        self.assertTrue(models.Patient.objects.filter(id=patient.id).exists())

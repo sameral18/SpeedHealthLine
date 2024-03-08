@@ -60,7 +60,7 @@ def doctor_signup(request):
     return render(request, 'doctorsignup.html', context=mydict)
 
 
-def patient_signup(request):
+def patientsignup(request):
     userForm = forms.PatientUserForm()
     patientForm = forms.PatientForm()
     mydict = {'userForm': userForm, 'patientForm': patientForm}
