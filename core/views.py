@@ -9,6 +9,10 @@ from datetime import  date
 from django.conf import settings
 from django.db.models import Q
 
+from .forms import DoctorForm
+from .models import Doctor
+
+
 def home_page(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('login_user')
@@ -539,6 +543,20 @@ def patient_dashboard(request):
         'admitDate': patient.admitDate,
     }
     return render(request, 'patient_dashboard.html', context=mydict)
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def profile_doctor(request):
+    doctor = Doctor.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Assuming you have a URL named 'profile' for the profile page
+    else:
+        form = DoctorForm(instance=doctor)
+
+    return render(request, 'profile_doctor.html', {'form': form})
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_discharge_patient(request):

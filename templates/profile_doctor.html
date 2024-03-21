@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <!-- Include necessary CSS files or link to your CSS file -->
+</head>
+<body>
+    <h1>Update Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Display profile picture -->
+        {% if doctor.profile_pic %}
+            <img src="{{ doctor.profile_pic.url }}" alt="Profile Picture">
+        {% endif %}
+        <input type="file" name="profile_pic">
+        <br>
+        <!-- Display user's first and last name -->
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ doctor.user.first_name }}">
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ doctor.user.last_name }}">
+        <br>
+        <!-- Display user's address and mobile number -->
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" value="{{ doctor.address }}">
+        <label for="mobile">Mobile:</label>
+        <input type="text" id="mobile" name="mobile" value="{{ doctor.mobile }}">
+        <br>
+        <!-- Display user's department -->
+        <label for="department">Department:</label>
+        <select id="department" name="department">
+            {% for choice in departments %}
+                <option value="{{ choice }}" {% if choice == doctor.department %} selected {% endif %}>{{ choice }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <!-- Display user's status -->
+        <label for="status">Status:</label>
+        <input type="checkbox" id="status" name="status" {% if doctor.status %} checked {% endif %}>
+        <br>
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

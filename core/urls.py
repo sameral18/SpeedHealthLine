@@ -23,7 +23,9 @@ urlpatterns = [
     path('doctorsignup', doctor_signup, name='doctorsignup'),
     path('patientsignup', patientsignup),
     path('Userlogin', LoginView.as_view(template_name='Userlogin.html'), name='Userlogin'),
-
+    #path('profile_admin', profile_admin, name='profile_admin'),
+    path('profile_doctor', profile_doctor, name='profile_doctor'),
+    #path('profile_patient', profile_patient, name='profile_patient'),
 
     path('login_user', login_user, name='login_user'),
     path('logout', logout_user, name='logout'),
