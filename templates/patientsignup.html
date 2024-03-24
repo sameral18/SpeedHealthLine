@@ -101,8 +101,8 @@
                 {% render_field userForm.password class="form-control" placeholder="Password" oninput="validatePassword(this)" %}
                 <small id="passwordHelp" class="form-text text-muted"></small>
              </div>
-             <div class="form-group">
-    {% render_field patientForm.mobile class="form-control" pattern="(\+9725\d{8}|\b05\d{8}\b)" placeholder="Phone Number" oninput="validatePhoneNumber(this)" %}
+<div class="form-group">
+    <input type="text" name="mobile" id="mobile" class="form-control" pattern="(\+9725\d{8}|\b05\d{8}\b)" placeholder="Phone Number" oninput="validatePhoneNumber(this)" required>
     <small id="phoneHelp" class="form-text text-muted"></small>
 </div>
 
@@ -111,7 +111,6 @@
         const phoneNumber = input.value;
         const phoneHelp = document.getElementById('phoneHelp');
 
-        // Your phone number validation logic here
         const isValid = /(\+9725\d{8}|\b05\d{8}\b)/.test(phoneNumber);
 
         if (isValid) {
@@ -120,17 +119,14 @@
         } else {
             input.setCustomValidity('Invalid phone number');
             phoneHelp.innerHTML = 'Please enter a valid Israeli mobile number';
-        }}
-</script>
+        }
+    }
 
-
-<script>
     function validatePassword(input) {
         const password = input.value;
         const passwordHelp = document.getElementById('passwordHelp');
 
-        // Your password validation logic here
-        const isValid = /^(?=.[a-z])(?=.[A-Z]).{8,16}$/.test(password);
+        const isValid = /^(?=.*[a-z])(?=.*[A-Z]).{8,16}$/.test(password);
 
         if (isValid) {
             input.setCustomValidity('');
@@ -138,8 +134,10 @@
         } else {
             input.setCustomValidity('Invalid password');
             passwordHelp.innerHTML = 'Password must contain at least one lowercase letter, one uppercase letter, and be 8-16 characters long';
-        }}
+        }
+    }
 </script>
+
 
 
 

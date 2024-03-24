@@ -23,9 +23,9 @@ urlpatterns = [
     path('doctorsignup', doctor_signup, name='doctorsignup'),
     path('patientsignup', patientsignup),
     path('Userlogin', LoginView.as_view(template_name='Userlogin.html'), name='Userlogin'),
-    #path('profile_admin', profile_admin, name='profile_admin'),
-    path('profile_doctor', profile_doctor, name='profile_doctor'),
-    #path('profile_patient', profile_patient, name='profile_patient'),
+    path('admin-profile/', admin_profile, name='admin_profile'),
+    path('doctor-profile/', doctor_profile, name='doctor_profile'),
+    path('patient-profile/', patient_profile, name='patient_profile'),
 
     path('login_user', login_user, name='login_user'),
     path('logout', logout_user, name='logout'),
@@ -78,4 +78,6 @@ urlpatterns = [
     path('doctor-view-appointment', doctor_view_patient, name='doctor-view-appointment'),
     path('doctor-delete-appointment', doctor_delete_appointment, name='doctor-delete-appointment'),
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
+    path('patient-discharge', patient_discharge, name='patient-discharge'),
+
 ]

@@ -1,7 +1,8 @@
 from django.contrib import messages
+from django.contrib.admin.helpers import AdminForm
 from django.shortcuts import render, redirect, reverse
 from . import forms, models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,8 +10,8 @@ from datetime import  date
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm
-from .models import Doctor
+from .forms import DoctorForm, PatientForm
+from .models import Doctor, Patient
 
 
 def home_page(request):
@@ -543,20 +544,7 @@ def patient_dashboard(request):
         'admitDate': patient.admitDate,
     }
     return render(request, 'patient_dashboard.html', context=mydict)
-@login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def profile_doctor(request):
-    doctor = Doctor.objects.get(user=request.user)
 
-    if request.method == 'POST':
-        form = DoctorForm(request.POST, request.FILES, instance=doctor)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')  # Assuming you have a URL named 'profile' for the profile page
-    else:
-        form = DoctorForm(instance=doctor)
-
-    return render(request, 'profile_doctor.html', {'form': form})
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_discharge_patient(request):
@@ -674,7 +662,8 @@ def patient_discharge(request):
             'patient': patient,
             'patientId': request.user.id,
         }
-    return render(request, 'patient_discharge.html', context=patientDict)@login_required(login_url='Userlogin')
+    return render(request, 'patient_discharge.html', context=patientDict)
+@login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_discharge_patient(request):
     dischargedpatients = models.PatientDischargeDetails.objects.all().distinct().filter(
@@ -764,6 +753,22 @@ def patient_view_appointment(request):
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'patient': patient})
 
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def admin_profile(request):
+    admin_user = User.objects.get(username='admin')  # Assuming 'admin' is the superuser username
+
+    if request.method == 'POST':
+        form = AdminForm(request.POST, request.FILES, instance=admin_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = AdminForm(instance=admin_profile)
+
+    return render(request, 'admin_profile.html', {'form': form})
+
+
 
 
 def aboutus(request):
@@ -783,3 +788,46 @@ def contactus(request):
             return render(request, 'contactussuccess.html')
     return render(request, 'contactus.html', {'form': sub})
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_profile(request):
+    doctor = Doctor.objects.get(user_id=request.user.id)
+    user = models.User.objects.get(id=doctor.user_id)
+    userForm = forms.DoctorUserForm(instance=user)
+    doctorForm = forms.DoctorForm(request.FILES, instance=doctor)
+    mydict = {'userForm': userForm, 'doctorForm': doctorForm}
+    if request.method == 'POST':
+        userForm = forms.DoctorUserForm(request.POST, instance=user)
+        doctorForm = forms.DoctorForm(request.POST, request.FILES, instance=doctor)
+        if userForm.is_valid() and doctorForm.is_valid():
+            user = userForm.save()
+            user.set_password(user.password)
+            user.save()
+            doctor = doctorForm.save(commit=False)
+            doctor.status = True
+            doctor.save()
+            return redirect('doctor-dashboard')
+    return render(request, 'doctor_profile.html', context=mydict)
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def patient_profile(request):
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    user = models.User.objects.get(id=patient.user_id)
+
+    userForm = forms.PatientUserForm(instance=user)
+    patientForm = forms.PatientForm(request.FILES, instance=patient)
+    mydict = {'userForm': userForm, 'patientForm': patientForm}
+    if request.method == 'POST':
+        userForm = forms.PatientUserForm(request.POST, instance=user)
+        patientForm = forms.PatientForm(request.POST, request.FILES, instance=patient)
+        if userForm.is_valid() and patientForm.is_valid():
+            user = userForm.save()
+            user.set_password(user.password)
+            user.save()
+            patient = patientForm.save(commit=False)
+            patient.status = True
+            patient.assignedDoctorId = request.POST.get('assignedDoctorId')
+            patient.save()
+            return redirect('patient-dashboard')
+    return render(request, 'patient_profile.html', context=mydict)
