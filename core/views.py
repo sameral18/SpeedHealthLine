@@ -763,9 +763,6 @@ def admin_profile(request):
         if form.is_valid():
             form.save()
             return redirect('profile')
-    else:
-        form = AdminForm(instance=admin_profile)
-
     return render(request, 'admin_profile.html', {'form': form})
 
 
@@ -806,9 +803,8 @@ def doctor_profile(request):
             doctor = doctorForm.save(commit=False)
             doctor.status = True
             doctor.save()
-            return redirect('doctor-dashboard')
+            return redirect('doctor_dashboard')
     return render(request, 'doctor_profile.html', context=mydict)
-
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_profile(request):
@@ -829,5 +825,5 @@ def patient_profile(request):
             patient.status = True
             patient.assignedDoctorId = request.POST.get('assignedDoctorId')
             patient.save()
-            return redirect('patient-dashboard')
+            return redirect('patient_dashboard')
     return render(request, 'patient_profile.html', context=mydict)
