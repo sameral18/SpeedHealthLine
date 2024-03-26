@@ -14,7 +14,15 @@ class AdminSigupForm(forms.ModelForm):
         'password': forms.PasswordInput()
         }
 
+class AdminProfileForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(), required=False)  # Make password field optional
 
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
+        widgets = {
+            'username': forms.TextInput(attrs={'maxlength': 100}),  # Set maximum length for username field
+        }
 
 
 class DoctorUserForm(forms.ModelForm):

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.admin.helpers import AdminForm
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect, reverse
 from . import forms, models
 from django.contrib.auth.models import Group, User
@@ -10,7 +11,7 @@ from datetime import  date
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm
+from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm
 from .models import Doctor, Patient
 
 
@@ -766,15 +767,18 @@ def patient_view_appointment(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_profile(request):
-    admin_user = User.objects.get(username='admin')  # Assuming 'admin' is the superuser username
-
     if request.method == 'POST':
-        form = AdminForm(request.POST, request.FILES, instance=admin_profile)
+        form = AdminProfileForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save()
-            return redirect('profile')
+            user = form.save(commit=False)
+            password = form.cleaned_data.get('password')
+            if password:
+                user.password = make_password(password)  # Hash the password
+            user.save()
+            return redirect('admin-dashboard')  # Redirect to a success page
+    else:
+        form = AdminProfileForm(instance=request.user)
     return render(request, 'admin_profile.html', {'form': form})
-
 
 
 
@@ -813,7 +817,7 @@ def doctor_profile(request):
             doctor = doctorForm.save(commit=False)
             doctor.status = True
             doctor.save()
-            return redirect('doctor-dashboard')
+            return redirect('profile-doctor')
     return render(request, 'doctor_profile.html', context=mydict)
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
@@ -835,5 +839,5 @@ def patient_profile(request):
             patient.status = True
             patient.assignedDoctorId = request.POST.get('assignedDoctorId')
             patient.save()
-            return redirect('patient-dashboard')
+            return redirect('profile-patient')
     return render(request, 'patient_profile.html', context=mydict)
