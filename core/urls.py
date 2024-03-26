@@ -24,12 +24,12 @@ urlpatterns = [
     path('patientsignup', patientsignup),
     path('Userlogin', LoginView.as_view(template_name='Userlogin.html'), name='Userlogin'),
     path('admin-profile/', admin_profile, name='admin_profile'),
-    path('doctor-profile/', doctor_profile, name='doctor_profile'),
-    path('patient-profile/', patient_profile, name='patient_profile'),
-
+    path('doctor-profile/', profile_d, name='doctor_profile'),
+    path('patient-profile/', profile_p, name='patient_profile'),
+    path('profile-patient/', patient_profile, name='profile-patient'),
+    path('profile-doctor/', doctor_profile, name='profile-doctor'),
     path('login_user', login_user, name='login_user'),
     path('logout', logout_user, name='logout'),
-
     path('admin-dashboard', admin_dashboard, name='admin-dashboard'),
     path('patient-dashboard', patient_dashboard, name='patient-dashboard'),
     path('admin-doctor', admin_doctor, name='admin-doctor'),

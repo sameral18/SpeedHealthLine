@@ -479,7 +479,17 @@ def search(request):
 def doctor_appointment(request):
     doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
     return render(request, 'doctor_appointment.html', {'doctor': doctor})
-
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def profile_d(request):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
+    return render(request, 'profile_d.html', {'doctor': doctor})
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def profile_p(request):
+    doctors = models.Doctor.objects.all().filter(status=True)
+    patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
+    return render(request, 'profile_p.html', {'patient': patient, 'doctors': doctors})
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
@@ -803,7 +813,7 @@ def doctor_profile(request):
             doctor = doctorForm.save(commit=False)
             doctor.status = True
             doctor.save()
-            return redirect('doctor_dashboard')
+            return redirect('doctor-dashboard')
     return render(request, 'doctor_profile.html', context=mydict)
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
@@ -825,5 +835,5 @@ def patient_profile(request):
             patient.status = True
             patient.assignedDoctorId = request.POST.get('assignedDoctorId')
             patient.save()
-            return redirect('patient_dashboard')
+            return redirect('patient-dashboard')
     return render(request, 'patient_profile.html', context=mydict)
