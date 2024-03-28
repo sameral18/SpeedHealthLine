@@ -1,3 +1,5 @@
+from calendar import Calendar
+
 from django.contrib import messages
 from django.contrib.admin.helpers import AdminForm
 from django.contrib.auth.hashers import make_password
@@ -847,26 +849,31 @@ def patient_profile(request):
     return render(request, 'patient_profile.html', context=mydict)
 
 
+from .forms import CalendarForm  # Import your CalendarForm
+
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_calendar(request):
-    if request.method == 'POST':
-        form = CalendarForm(request.POST)
-        if form.is_valid():
-            new_entry = form.save(commit=False)
-            new_entry.doctor = request.user
-            new_entry.save()
-            return redirect('doctor_calendar')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = CalendarForm(request.POST)
+            if form.is_valid():
+                new_entry = form.save(commit=False)
+                new_entry.doctor = request.user
+                new_entry.save()
+                return redirect('doctor_calendar')
+        else:
+            form = CalendarForm()  # Initialize the form for GET requests
+
+        upcoming_entries = calendar.objects.filter(doctor=request.user).order_by('date', 'time')
+
+        if request.GET.get('show_all'):
+            upcoming_entries = upcoming_entries
+        else:
+            upcoming_entries = upcoming_entries.filter(is_available=True)
+
+        context = {'upcoming_entries': upcoming_entries, 'form': form}
+        return render(request, 'doctor_calendar.html', context)
     else:
-        form = CalendarForm()
-
-    upcoming_entries = Calendar.objects.filter(doctor=request.user).order_by('date', 'time')
-
-    if request.GET.get('show_all'):
-        upcoming_entries = upcoming_entries
-    else:
-        upcoming_entries = upcoming_entries.filter(is_available=True)
-
-    context = {'upcoming_entries': upcoming_entries, 'form': form}
-    return render(request, 'doctor_calendar.html', context)
+        return redirect('doctor-dashboard')

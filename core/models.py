@@ -58,14 +58,13 @@ class Doctor(models.Model):
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
 class calendar(models.Model):
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE)  # Assuming User model for doctors
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')  # Assuming User model for patients
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
-    is_available = models.BooleanField(default=False)  # Availability flag
+    is_available = models.BooleanField(default=True)
 
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')], default='pending')
-
+    def __str__(self):
+        return f"{self.date} - {self.time} ({'Available' if self.is_available else 'Not Available'})"
     def __str__(self):
         return f"{self.patient.get_full_name()} - {self.date} ({self.time})"  # Improved string representation
 
@@ -73,8 +72,7 @@ class calendar(models.Model):
         return reverse('calendar_detail', kwargs={'pk': self.pk})  # Assuming you have a detail view for calendar entries (adjust URL name if needed)
 
     class Meta:
-        ordering = ['date', 'time']  # Order calendar entries by date and time by default
-
+        ordering = ['date', 'time']
 class Appointment(models.Model):
     patientId=models.PositiveIntegerField(null=True)
     doctorId=models.PositiveIntegerField(null=True)
