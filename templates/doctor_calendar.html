@@ -1,0 +1,46 @@
+{% extends 'doctor_base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Calendar</title>
+</head>
+<body>
+    <h1>Doctor Calendar</h1>
+    <form method="POST">
+        {% csrf_token %}  # Add CSRF token
+        {{ form.as_p }}  # Render form fields
+        <button type="submit">Add New Slot</button>
+    </form>
+
+<a href="?show_all={{ not.request.GET.show_all|default_if_none:'' }}">  <!-- Toggle to show all entries -->
+    {% if request.GET.show_all %}Show Only Available Slots{% else %}Show All Entries{% endif %}
+</a>
+
+    {% if upcoming_entries %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Available</th>
+                    <th>... (Other columns)</th>  # Replace ... with other relevant fields
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in upcoming_entries %}
+                    <tr>
+                        <td>{{ entry.date }}</td>
+                        <td>{{ entry.time }}</td>
+                        <td>{{ entry.is_available }}</td>  # Display availability
+                        <td>... (Display other fields)</td>  # Replace ... with other relevant values
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No upcoming calendar entries.</p>
+    {% endif %}
+</body>
+</html>
+{% endblock content %}

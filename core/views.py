@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.admin.helpers import AdminForm
 from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, reverse
 from . import forms, models
 from django.contrib.auth.models import Group, User
@@ -11,8 +12,8 @@ from datetime import  date
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm
-from .models import Doctor, Patient
+from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, CalendarForm
+from .models import Doctor, Patient, Appointment, calendar
 
 
 def home_page(request):
@@ -612,7 +613,6 @@ def discharge_patient(request, pk):
     return render(request, 'patient_generate_bill.html', context=patientDict)
 
 
-# --------------for discharge patient bill (pdf) download and printing
 import io
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -645,7 +645,8 @@ def download_pdf(request, pk):
         'OtherCharge': dischargeDetails[0].OtherCharge,
         'total': dischargeDetails[0].total,
     }
-    return render_to_pdf('download_bill.html', dict)@login_required(login_url='Userlogin')
+    return render_to_pdf('download_bill.html', dict)
+@login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_discharge(request):
     patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
@@ -655,7 +656,7 @@ def patient_discharge(request):
         patientDict = {
             'is_discharged': True,
             'patient': patient,
-            'patientId': patient.id,
+            #'patientId': patient.id,
             'patientName': patient.get_name,
             'assignedDoctorName': dischargeDetails[0].assignedDoctorName,
             'mobile': patient.mobile,
@@ -844,3 +845,34 @@ def patient_profile(request):
             patient.save()
             return redirect('profile-patient')
     return render(request, 'patient_profile.html', context=mydict)
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_calendar(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':  # Handle form submission for adding new entries
+            form = CalendarForm(request.POST)
+            if form.is_valid():
+                new_entry = form.save(commit=False)  # Don't save yet
+                new_entry.doctor = request.user
+                new_entry.save()  # Save with doctor and availability flag
+                return redirect('doctor_calendar')  # Redirect back to the calendar view
+        else:
+            form = CalendarForm()  # Create an empty form for adding new entries
+
+        # Filter upcoming calendar entries for the logged-in doctor
+        upcoming_entries = calendar.objects.filter(
+            doctor=request.user
+        ).order_by('date', 'time')
+
+        # If doctor wants to see all entries, include them regardless of availability
+        if request.GET.get('show_all'):
+            upcoming_entries = upcoming_entries
+        else:
+            # Filter for available slots only for the doctor's calendar view
+            upcoming_entries = upcoming_entries.filter(is_available=True)
+
+        context = {'upcoming_entries': upcoming_entries, 'form': form}
+        return render(request, 'doctor_calendar.html', context)
+    else:
+        return redirect('doctor-dashboard')

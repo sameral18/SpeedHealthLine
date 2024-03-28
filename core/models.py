@@ -1,3 +1,5 @@
+from audioop import reverse
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -55,7 +57,23 @@ class Doctor(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
+class calendar(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)  # Assuming User model for doctors
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')  # Assuming User model for patients
+    date = models.DateField()
+    time = models.TimeField()
+    is_available = models.BooleanField(default=False)  # Availability flag
 
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')], default='pending')
+
+    def __str__(self):
+        return f"{self.patient.get_full_name()} - {self.date} ({self.time})"  # Improved string representation
+
+    def get_absolute_url(self):
+        return reverse('calendar_detail', kwargs={'pk': self.pk})  # Assuming you have a detail view for calendar entries (adjust URL name if needed)
+
+    class Meta:
+        ordering = ['date', 'time']  # Order calendar entries by date and time by default
 
 class Appointment(models.Model):
     patientId=models.PositiveIntegerField(null=True)

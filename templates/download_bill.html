@@ -9,13 +9,7 @@
       size: A4;
       margin: 1cm;
 
-      @frame footer {
-        -pdf-frame-content: footerContent;
-        bottom: 0cm;
-        margin-left: 9cm;
-        margin-right: 9cm;
-        height: 1cm;
-      }
+
     }
 
     .invoice-box {
@@ -143,7 +137,6 @@
               <td>
                 Patient Name : {{patientName}}<br>
                 Patient Mobile : {{mobile}}<br>
-                Patient Addres : {{address}}<br>
               </td>
 
               <td>
@@ -179,7 +172,7 @@
                 Doctor Fee : {{doctorFee}}<br>
                 Medicine Cost : {{medicineCost}}<br>
                 Other Charge : {{OtherCharge}} <br><br>
-                &nbsp &nbsp &nbsp &nbsp &nbsp Total Rupees : {{total}}
+                &nbsp &nbsp &nbsp &nbsp &nbsp Total  : {{total}}
               </td>
             </tr>
           </table>
