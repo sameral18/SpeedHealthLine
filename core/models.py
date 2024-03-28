@@ -22,6 +22,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=255, default="", blank=True)
 
 
+
     @classmethod
     def create_user(cls, username, password, assignedDoctorId, **extra_fields):
         user = User.objects.create_user(username=username, password=password, **extra_fields)

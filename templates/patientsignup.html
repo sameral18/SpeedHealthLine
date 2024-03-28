@@ -78,7 +78,7 @@
     <div class="container register-form">
       <div class="form">
         <div class="note">
-          <p class="glow-text">Register to SpeedyHealthLine</p> <!-- Add glowing effect to the text -->
+          <p class="glow-text">Register to SpeedyHealthLine</p>
         </div>
 
         <div class="form-content">
@@ -90,20 +90,20 @@
               <div class="form-group">
                 {% render_field userForm.username class="form-control" placeholder="Username" %}
               </div>
-
-
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
               </div>
-             <div class="form-group">
+              <div class="form-group">
                 {% render_field userForm.password class="form-control" placeholder="Password" oninput="validatePassword(this)" %}
                 <small id="passwordHelp" class="form-text text-muted"></small>
-             </div>
-<div class="form-group">
-    <input type="text" name="mobile" id="mobile" class="form-control" pattern="(\+9725\d{8}|\b05\d{8}\b)" placeholder="Phone Number" oninput="validatePhoneNumber(this)" required>
-    <small id="phoneHelp" class="form-text text-muted"></small>
+</div>
+                              <div class="form-group">
+                {% render_field patientForm.mobile class="form-control" placeholder="Mobile" oninput="validatePhoneNumber(this)" %}
+                <small id="phoneHelp" class="form-text text-muted"></small>
+</div>
+
 </div>
 
 <script>
@@ -138,12 +138,6 @@
     }
 </script>
 
-
-
-
-
-
-            </div>
           </div>
           <button type="submit" class="btnSubmit">Register</button>
           <div class="text-center">Already have an account? <a href="Userlogin">Login here</a></div>

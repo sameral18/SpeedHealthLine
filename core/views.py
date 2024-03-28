@@ -83,6 +83,8 @@ def patientsignup(request):
             patient = patient.save()
             my_patient_group = Group.objects.get_or_create(name='PATIENT')
             my_patient_group[0].user_set.add(user)
+        else:
+            return render(request, 'index.html')
         return HttpResponseRedirect('Userlogin')
     return render(request, 'patientsignup.html', context=mydict)
 
@@ -681,7 +683,8 @@ def doctor_discharge_patient(request):
         assignedDoctorName=request.user.first_name)
     doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
     return render(request, 'doctor_discharge_patient.html',
-                  {'dischargedpatients': dischargedpatients, 'doctor': doctor})@login_required(login_url='Userlogin')
+                  {'dischargedpatients': dischargedpatients, 'doctor': doctor})
+@login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_dashboard(request):
     # for three cards
