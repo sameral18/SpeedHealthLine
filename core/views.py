@@ -846,33 +846,27 @@ def patient_profile(request):
             return redirect('profile-patient')
     return render(request, 'patient_profile.html', context=mydict)
 
+
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_calendar(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':  # Handle form submission for adding new entries
-            form = CalendarForm(request.POST)
-            if form.is_valid():
-                new_entry = form.save(commit=False)  # Don't save yet
-                new_entry.doctor = request.user
-                new_entry.save()  # Save with doctor and availability flag
-                return redirect('doctor_calendar')  # Redirect back to the calendar view
-        else:
-            form = CalendarForm()  # Create an empty form for adding new entries
-
-        # Filter upcoming calendar entries for the logged-in doctor
-        upcoming_entries = calendar.objects.filter(
-            doctor=request.user
-        ).order_by('date', 'time')
-
-        # If doctor wants to see all entries, include them regardless of availability
-        if request.GET.get('show_all'):
-            upcoming_entries = upcoming_entries
-        else:
-            # Filter for available slots only for the doctor's calendar view
-            upcoming_entries = upcoming_entries.filter(is_available=True)
-
-        context = {'upcoming_entries': upcoming_entries, 'form': form}
-        return render(request, 'doctor_calendar.html', context)
+    if request.method == 'POST':
+        form = CalendarForm(request.POST)
+        if form.is_valid():
+            new_entry = form.save(commit=False)
+            new_entry.doctor = request.user
+            new_entry.save()
+            return redirect('doctor_calendar')
     else:
-        return redirect('doctor-dashboard')
+        form = CalendarForm()
+
+    upcoming_entries = Calendar.objects.filter(doctor=request.user).order_by('date', 'time')
+
+    if request.GET.get('show_all'):
+        upcoming_entries = upcoming_entries
+    else:
+        upcoming_entries = upcoming_entries.filter(is_available=True)
+
+    context = {'upcoming_entries': upcoming_entries, 'form': form}
+    return render(request, 'doctor_calendar.html', context)
