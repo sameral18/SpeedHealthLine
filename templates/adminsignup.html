@@ -87,7 +87,7 @@
                 {% render_field form.last_name class="form-control" placeholder="Last Name" %}
               </div>
               <div class="form-group">
-                {% render_field form.password class="form-control" pattern="(?=.[a-z])(?=.[A-Z]).{8,16}" placeholder="Password" %}
+              {% render_field form.password class="form-control" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}" placeholder="Password" %}
               </div>
 
             </div>
