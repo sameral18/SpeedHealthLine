@@ -10,12 +10,12 @@ from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
-from datetime import  date
+from datetime import date, timezone
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, CalendarForm
-from .models import Doctor, Patient, Appointment, calendar
+from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm
+from .models import Doctor, Patient, Appointment
 
 
 def home_page(request):
@@ -504,6 +504,8 @@ def doctor_view_appointment(request):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
+        doctor = a.timeslots.doctor
+
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -517,6 +519,8 @@ def doctor_delete_appointment(request):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
+        doctor = a.timeslots.doctor
+
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -532,6 +536,8 @@ def delete_appointment(request, pk):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
+        doctor = a.timeslots.doctor
+
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -691,18 +697,16 @@ def doctor_discharge_patient(request):
 @user_passes_test(is_doctor)
 def doctor_dashboard(request):
     # for three cards
-    patientcount = models.Patient.objects.all().filter(status=True, assignedDoctorId=request.user.id).count()
-    appointmentcount = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id).count()
-    patientdischarged = models.PatientDischargeDetails.objects.all().distinct().filter(
-        assignedDoctorName=request.user.first_name).count()
+    patientcount = models.Patient.objects.filter(status=True, assignedDoctorId=request.user.id).count()
+    appointmentcount = models.Appointment.objects.filter(status=True, doctorName=request.user.username).count()
+    patientdischarged = models.PatientDischargeDetails.objects.filter(assignedDoctorName=request.user.first_name).count()
 
-    # for  table in doctor dashboard
-    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id).order_by('-id')
-    patientid = []
-    for a in appointments:
-        patientid.append(a.patientId)
-    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid).order_by('-id')
+    # for table in doctor dashboard
+    appointments = models.Appointment.objects.filter(status=True, timeslots__doctor=request.user.id).order_by('-id')
+
+    patients = models.Patient.objects.filter(status=True).order_by('-id')
     appointments = zip(appointments, patients)
+
     mydict = {
         'patientcount': patientcount,
         'appointmentcount': appointmentcount,
@@ -710,8 +714,7 @@ def doctor_dashboard(request):
         'appointments': appointments,
         'doctor': models.Doctor.objects.get(user_id=request.user.id),  # for profile picture of doctor in sidebar
     }
-    return render(request, 'doctor_dashboard.html',context=mydict)
-
+    return render(request, 'doctor_dashboard.html', context=mydict)
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
@@ -849,31 +852,20 @@ def patient_profile(request):
     return render(request, 'patient_profile.html', context=mydict)
 
 
-from .forms import CalendarForm  # Import your CalendarForm
 
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
-def doctor_calendar(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = CalendarForm(request.POST)
-            if form.is_valid():
-                new_entry = form.save(commit=False)
-                new_entry.doctor = request.user
-                new_entry.save()
-                return redirect('doctor_calendar')
-        else:
-            form = CalendarForm()  # Initialize the form for GET requests
-
-        upcoming_entries = calendar.objects.filter(doctor=request.user).order_by('date', 'time')
-
-        if request.GET.get('show_all'):
-            upcoming_entries = upcoming_entries
-        else:
-            upcoming_entries = upcoming_entries.filter(is_available=True)
-
-        context = {'upcoming_entries': upcoming_entries, 'form': form}
-        return render(request, 'doctor_calendar.html', context)
+def add_doctor_schedule(request):
+    if request.method == 'POST':
+        form = DoctorScheduleForm(request.POST)
+        if form.is_valid():
+            new_schedule = form.save(commit=False)
+            new_schedule.doctor = request.user
+            new_schedule.save()
+            return redirect('doctor-dashboard')
     else:
-        return redirect('doctor-dashboard')
+        form = DoctorScheduleForm()
+
+    return render(request, 'doctor_schedule_form.html', {'form': form})
+

@@ -16,7 +16,7 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_page, name=''),
-    path('doctor-calender/', doctor_calendar, name='doctor-calendar'),
+    path('doctor-calender/', add_doctor_schedule, name='doctor-calendar'),
     path('admin-discharge-patient', admin_discharge_patient, name='admin-discharge-patient'),
     path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
     path('download-pdf/<int:pk>', download_pdf, name='download-pdf'),

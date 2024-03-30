@@ -57,30 +57,7 @@ class Doctor(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
-class calendar(models.Model):
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
-    time = models.TimeField()
-    is_available = models.BooleanField(default=True)
 
-    def __str__(self):
-        return f"{self.date} - {self.time} ({'Available' if self.is_available else 'Not Available'})"
-    def __str__(self):
-        return f"{self.patient.get_full_name()} - {self.date} ({self.time})"  # Improved string representation
-
-    def get_absolute_url(self):
-        return reverse('calendar_detail', kwargs={'pk': self.pk})  # Assuming you have a detail view for calendar entries (adjust URL name if needed)
-
-    class Meta:
-        ordering = ['date', 'time']
-class Appointment(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
-    doctorId=models.PositiveIntegerField(null=True)
-    patientName=models.CharField(max_length=40,null=True)
-    doctorName=models.CharField(max_length=40,null=True)
-    appointmentDate=models.DateField(auto_now=True)
-    description=models.TextField(max_length=500)
-    status=models.BooleanField(default=True)
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True)
     patientName=models.CharField(max_length=40)
@@ -96,3 +73,24 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
+
+
+class DoctorSchedule(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    time = models.TimeField()
+
+    def __str__(self):
+        return f"Doctor: {self.doctor.username}, Date: {self.date}, Time: {self.time}"
+
+class Appointment(models.Model):
+    patientName = models.CharField(max_length=40, null=True)
+    doctorName = models.CharField(max_length=40, null=True)
+    appointmentDate = models.DateField(null=True)
+    appointmentTime = models.TimeField(null=True)
+    timeslots = models.ManyToManyField(DoctorSchedule)  # تعديل هنا للارتباط بنموذج DoctorSchedule
+    description = models.TextField(max_length=500)
+    status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Appointment with {self.doctorName} on {self.appointmentDate} at {self.appointmentTime}"

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 from django import forms
-from .models import Doctor, calendar
+from .models import Doctor
 
 
 #for admin signup
@@ -75,7 +75,10 @@ class ContactusForm(forms.Form):
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
 
-class CalendarForm(forms.ModelForm):
+from django import forms
+from .models import DoctorSchedule
+
+class DoctorScheduleForm(forms.ModelForm):
     class Meta:
-        model = calendar
-        fields = ['date', 'time', 'description', 'is_available']
+        model = DoctorSchedule
+        fields = ['date', 'time']
