@@ -84,11 +84,13 @@ class DoctorSchedule(models.Model):
         return f"Doctor: {self.doctor.username}, Date: {self.date}, Time: {self.time}"
 
 class Appointment(models.Model):
+    patientId=models.PositiveIntegerField(null=True,default=0)
+    doctorId=models.PositiveIntegerField(null=True,default=0)
     patientName = models.CharField(max_length=40, null=True)
     doctorName = models.CharField(max_length=40, null=True)
     appointmentDate = models.DateField(null=True)
     appointmentTime = models.TimeField(null=True)
-    timeslots = models.ManyToManyField(DoctorSchedule)  # تعديل هنا للارتباط بنموذج DoctorSchedule
+    timeslots = models.ManyToManyField(DoctorSchedule,null=True)
     description = models.TextField(max_length=500)
     status = models.BooleanField(default=True)
 
