@@ -392,7 +392,7 @@ def admin_appointment(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_view_appointment(request):
-    appointments = models.Appointment.objects.all().filter(status=True)
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
     return render(request, 'admin_view_appointment.html', {'appointments': appointments})
 
 
@@ -419,7 +419,7 @@ def admin_add_appointment(request):
 @user_passes_test(is_doctor)
 def doctor_approve_appointment(request):
     # those whose approval are needed
-    appointments = models.Appointment.objects.all().filter(status=False)
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
     return render(request, 'doctor_approve_appointment.html', {'appointments': appointments})
 
 
@@ -501,7 +501,7 @@ def profile_p(request):
 @user_passes_test(is_doctor)
 def doctor_view_appointment(request):
     doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
     patientid = []
     for a in appointments:
         doctor = a.timeslots.doctor
@@ -702,7 +702,7 @@ def doctor_dashboard(request):
     patientdischarged = models.PatientDischargeDetails.objects.filter(assignedDoctorName=request.user.first_name).count()
 
     # for table in doctor dashboard
-    appointments = models.Appointment.objects.filter(status=True, timeslots__doctor=request.user.id).order_by('-id')
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
 
     patients = models.Patient.objects.filter(status=True).order_by('-id')
     appointments = zip(appointments, patients)
@@ -719,8 +719,8 @@ def doctor_dashboard(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_appointment(request):
-    patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
-    return render(request, 'patient_appointment.html', {'patient': patient})
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
+    return render(request, 'patient_appointment.html', context={'patient': Patient, 'appointments': appointments})
 
 
 @login_required(login_url='Userlogin')
@@ -768,9 +768,10 @@ def search_doctor(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_view_appointment(request):
-    patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
-    appointments = models.Appointment.objects.all().filter(patientId=request.user.id)
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    appointments = models.Appointment.objects.filter(patient=request.user, status=True).order_by('-id')
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'patient': patient})
+
 
 
 @login_required(login_url='Userlogin')
