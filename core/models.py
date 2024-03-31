@@ -81,7 +81,7 @@ class DoctorSchedule(models.Model):
     time = models.TimeField()
 
     def __str__(self):
-        return f"Doctor: {self.doctor.username}, Date: {self.date}, Time: {self.time}"
+        return f"Doctor: {self.doctor.first_name}, Date: {self.date}, Time: {self.time}"
 
 class Appointment(models.Model):
     patientId=models.PositiveIntegerField(null=True,default=0)

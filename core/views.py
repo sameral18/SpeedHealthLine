@@ -14,8 +14,8 @@ from datetime import date, timezone, datetime
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm
-from .models import Doctor, Patient, Appointment
+from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm, PatientAppointmentForm
+from .models import Doctor, Patient, Appointment, DoctorSchedule
 
 
 def home_page(request):
@@ -723,20 +723,37 @@ def patient_appointment(request):
     return render(request, 'patient_appointment.html', context={'patient': Patient, 'appointments': appointments})
 
 
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from .forms import PatientAppointmentForm
+from .models import Doctor, DoctorSchedule, Patient
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_book_appointment(request):
     if request.method == 'POST':
-        appointmentForm = forms.PatientAppointmentForm(request.POST)
+        appointmentForm = PatientAppointmentForm(request.POST)
         if appointmentForm.is_valid():
             doctor_id = request.POST.get('doctorId')
             description = request.POST.get('description')
 
-            # Get doctor details
             try:
-                doctor = models.Doctor.objects.get(user_id=doctor_id)
-            except models.Doctor.DoesNotExist:
+                doctor = Doctor.objects.get(user_id=doctor_id)
+            except Doctor.DoesNotExist:
                 messages.error(request, 'Invalid doctor selected.')
+                return redirect('patient-book-appointment')
+
+            timeslots = DoctorSchedule.objects.all()
+            if not timeslots.exists():
+                messages.error(request, 'No timeslots available for the selected doctor.')
+                return redirect('patient-book-appointment')
+
+            # Check if doctor name and department match
+            if doctor.user.first_name != appointmentForm.cleaned_data['doctorId'].user.first_name :
+                messages.error(request, 'Doctor name or department does not match.')
                 return redirect('patient-book-appointment')
 
             # Save appointment
@@ -745,18 +762,22 @@ def patient_book_appointment(request):
             appointment.patientId = request.user.id
             appointment.doctorName = doctor.user.first_name
             appointment.patientName = request.user.first_name
-            appointment.status = False
-            appointment.save()
+            appointment.status = True
+            appointment.save()  # Save the appointment first
+
+            # Now set the timeslots
+            appointment.timeslots.set(request.POST.get('timeslots'))
 
             messages.success(request, 'Appointment booked successfully.')
             return HttpResponseRedirect('patient-view-appointment')
 
     else:
-        appointmentForm = forms.PatientAppointmentForm()
+        appointmentForm = PatientAppointmentForm()
 
-    patient = models.Patient.objects.get(user_id=request.user.id)
+    patient = Patient.objects.get(user_id=request.user.id)
     context = {'appointmentForm': appointmentForm, 'patient': patient}
     return render(request, 'patient_book_appointment.html', context)
+
 
 def patient_doctor(request):
     doctors = models.Doctor.objects.all().filter(status=True)

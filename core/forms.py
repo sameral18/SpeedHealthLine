@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 from django import forms
-from .models import Doctor, DoctorSchedule
+from .models import Doctor, DoctorSchedule, Appointment
 
 
 #for admin signup
@@ -62,14 +62,13 @@ class AppointmentForm(forms.ModelForm):
         fields=['description','status']
 
 
-from django import forms
-from .models import Appointment
+
 
 class PatientAppointmentForm(forms.ModelForm):
     doctorId = forms.ModelChoiceField(queryset=models.Doctor.objects.filter(status=True), empty_label="Doctor Name and Department", to_field_name="user_id", widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Doctor'}))
     appointmentDate = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Date'}))
     appointmentTime = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Time'}))
-    timeslots = forms.ModelChoiceField(queryset=DoctorSchedule.objects.none(), required=True, widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Timeslots'}))
+    timeslots = forms.ModelChoiceField(queryset=DoctorSchedule.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Timeslots'}))
 
     class Meta:
         model = Appointment
@@ -97,8 +96,7 @@ class ContactusForm(forms.Form):
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
 
-from django import forms
-from .models import DoctorSchedule
+
 
 class DoctorScheduleForm(forms.ModelForm):
     class Meta:
