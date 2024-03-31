@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 from django import forms
-from .models import Doctor
+from .models import Doctor, DoctorSchedule
 
 
 #for admin signup
@@ -62,11 +62,33 @@ class AppointmentForm(forms.ModelForm):
         fields=['description','status']
 
 
+from django import forms
+from .models import Appointment
+
 class PatientAppointmentForm(forms.ModelForm):
-    doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
+    doctorId = forms.ModelChoiceField(queryset=models.Doctor.objects.filter(status=True), empty_label="Doctor Name and Department", to_field_name="user_id", widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Doctor'}))
+    appointmentDate = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Date'}))
+    appointmentTime = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Time'}))
+    timeslots = forms.ModelChoiceField(queryset=DoctorSchedule.objects.none(), required=True, widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Timeslots'}))
+
     class Meta:
-        model=models.Appointment
-        fields=['description','status']
+        model = Appointment
+        fields = ['description', 'appointmentDate', 'appointmentTime', 'timeslots']
+
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'doctorId' in self.data:
+            try:
+                doctor_id = int(self.data.get('doctorId'))
+                self.fields['timeslots'].queryset = DoctorSchedule.objects.filter(doctor_id=doctor_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty queryset
+        elif self.instance.pk:
+            self.fields['timeslots'].queryset = self.instance.doctor.timeslots.all()
 
 
 #for contact us page

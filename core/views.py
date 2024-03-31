@@ -10,7 +10,7 @@ from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
-from datetime import date, timezone
+from datetime import date, timezone, datetime
 from django.conf import settings
 from django.db.models import Q
 
@@ -392,7 +392,8 @@ def admin_appointment(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_view_appointment(request):
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter(status=True).order_by('-id')
+    #appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
     return render(request, 'admin_view_appointment.html', {'appointments': appointments})
 
 
@@ -419,7 +420,7 @@ def admin_add_appointment(request):
 @user_passes_test(is_doctor)
 def doctor_approve_appointment(request):
     # those whose approval are needed
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter( status=True).order_by('-id')
     return render(request, 'doctor_approve_appointment.html', {'appointments': appointments})
 
 
@@ -501,11 +502,10 @@ def profile_p(request):
 @user_passes_test(is_doctor)
 def doctor_view_appointment(request):
     doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter(status=True).order_by('-id')
     patientid = []
     for a in appointments:
-        doctor = a.timeslots.doctor
-
+        doctor = a.timeslots
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -702,7 +702,7 @@ def doctor_dashboard(request):
     patientdischarged = models.PatientDischargeDetails.objects.filter(assignedDoctorName=request.user.first_name).count()
 
     # for table in doctor dashboard
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter(status=True).order_by('-id')
 
     patients = models.Patient.objects.filter(status=True).order_by('-id')
     appointments = zip(appointments, patients)
@@ -719,35 +719,44 @@ def doctor_dashboard(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_appointment(request):
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter(status=True).order_by('-id')
     return render(request, 'patient_appointment.html', context={'patient': Patient, 'appointments': appointments})
 
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_book_appointment(request):
-    appointmentForm = forms.PatientAppointmentForm()
-    patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
-    message = None
-    mydict = {'appointmentForm': appointmentForm, 'patient': patient, 'message': message}
     if request.method == 'POST':
         appointmentForm = forms.PatientAppointmentForm(request.POST)
         if appointmentForm.is_valid():
-            print(request.POST.get('doctorId'))
-            desc = request.POST.get('description')
+            doctor_id = request.POST.get('doctorId')
+            description = request.POST.get('description')
 
-            doctor = models.Doctor.objects.get(user_id=request.POST.get('doctorId'))
+            # Get doctor details
+            try:
+                doctor = models.Doctor.objects.get(user_id=doctor_id)
+            except models.Doctor.DoesNotExist:
+                messages.error(request, 'Invalid doctor selected.')
+                return redirect('patient-book-appointment')
 
+            # Save appointment
             appointment = appointmentForm.save(commit=False)
-            appointment.doctorId = request.POST.get('doctorId')
-            appointment.patientId = request.user.id  # ----user can choose any patient but only their info will be stored
-            appointment.doctorName = models.User.objects.get(id=request.POST.get('doctorId')).first_name
-            appointment.patientName = request.user.first_name  # ----user can choose any patient but only their info will be stored
+            appointment.doctorId = doctor_id
+            appointment.patientId = request.user.id
+            appointment.doctorName = doctor.user.first_name
+            appointment.patientName = request.user.first_name
             appointment.status = False
             appointment.save()
-        return HttpResponseRedirect('patient-view-appointment')
-    return render(request, 'patient_book_appointment.html', context=mydict)
 
+            messages.success(request, 'Appointment booked successfully.')
+            return HttpResponseRedirect('patient-view-appointment')
+
+    else:
+        appointmentForm = forms.PatientAppointmentForm()
+
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    context = {'appointmentForm': appointmentForm, 'patient': patient}
+    return render(request, 'patient_book_appointment.html', context)
 
 def patient_doctor(request):
     doctors = models.Doctor.objects.all().filter(status=True)
@@ -769,7 +778,7 @@ def search_doctor(request):
 @user_passes_test(is_patient)
 def patient_view_appointment(request):
     patient = models.Patient.objects.get(user_id=request.user.id)
-    appointments = models.Appointment.objects.filter(patientId=request.user.id, status=True).order_by('-id')
+    appointments = models.Appointment.objects.filter(status=True).order_by('-id')
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'patient': patient})
 
 
