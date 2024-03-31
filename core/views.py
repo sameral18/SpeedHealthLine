@@ -421,7 +421,7 @@ def admin_add_appointment(request):
 @user_passes_test(is_doctor)
 def doctor_approve_appointment(request):
     # those whose approval are needed
-    appointments = models.Appointment.objects.filter( status=True).order_by('-id')
+    appointments = models.Appointment.objects.all().order_by('-id')
     return render(request, 'doctor_approve_appointment.html', {'appointments': appointments})
 
 
@@ -429,9 +429,8 @@ def doctor_approve_appointment(request):
 @user_passes_test(is_doctor)
 def approve_appointment(request, pk):
     appointment = models.Appointment.objects.get(id=pk)
-    appointment.status = True
     appointment.save()
-    return redirect(reverse('doctor-approve-appointment'))
+    return redirect('doctor-approve-appointment')
 
 
 @login_required(login_url='Userlogin')
@@ -521,7 +520,6 @@ def doctor_delete_appointment(request):
     patientid = []
     for a in appointments:
         doctor = a.timeslots.doctor
-
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -538,8 +536,7 @@ def delete_appointment(request, pk):
     patientid = []
     for a in appointments:
         doctor = a.timeslots.doctor
-
-        patientid.append(a.patientId)
+        #patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'doctor_delete_appointment.html', {'appointments': appointments, 'doctor': doctor})

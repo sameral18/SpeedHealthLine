@@ -39,7 +39,6 @@
       {% for a,p in appointments %}
       <tr>
         <td>{{a.patientName}}</td>
-        <td> <img src="{% static p.certificate_file.url %}" alt="certificate_file" height="40px" width="40px" /></td>
         <td>{{a.description}}</td>
         <td><a class="btn btn-danger btn-xs" href="{% url 'delete-appointment' a.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>
