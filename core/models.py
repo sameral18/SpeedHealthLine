@@ -118,3 +118,4 @@ class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
+    answer_text = models.TextField()

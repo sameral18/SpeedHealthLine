@@ -267,7 +267,6 @@
   <nav class="menu" tabindex="0">
     <div class="smartphone-menu-trigger"></div>
     <header class="avatar">
-      <img src="{% static doctor.certificate_file.url %}" alt="certificate_file" />
       <br><br>
       <h6>Doctor</h6>
       <h2>{{request.user.first_name}}</h2>
@@ -278,7 +277,11 @@
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/doctor-appointment"><span>Appointments</span></a></li>
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/doctor-profile"><span>Profile</span></a></li>
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/doctor-calender"><span>Calendar</span></a></li>
-
+      <li tabindex="0" class="icon-calendar">
+        <a style="color:white; text-decoration:none;" href="{% url 'view_survey' survey.id %}">
+         <span>Survey</span>
+        </a>
+      </li>
     </ul>
   </nav>
   <main>

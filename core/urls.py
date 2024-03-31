@@ -84,5 +84,6 @@ urlpatterns = [
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
     path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('admin-create-survey', create_survey, name='admin-create-survey'),
+    path('survey/<int:survey_id>/', view_survey, name='view_survey'),
 
 ]

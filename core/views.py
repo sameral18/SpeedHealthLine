@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.admin.helpers import AdminForm
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from . import forms, models
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
@@ -15,8 +15,8 @@ from django.conf import settings
 from django.db.models import Q
 
 from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm, \
-    PatientAppointmentForm, SurveyForm, SurveyQuestionFormSet
-from .models import Doctor, Patient, Appointment, DoctorSchedule
+    PatientAppointmentForm, SurveyForm, SurveyQuestionFormSet, AnswerForm
+from .models import Doctor, Patient, Appointment, DoctorSchedule, Answer
 
 
 def home_page(request):
@@ -911,7 +911,7 @@ def create_survey(request):
     if request.method == 'POST':
         survey_form = SurveyForm(request.POST)
         question_formset = formset_factory(QuestionForm)(request.POST)
-        if survey_form.is_valid() and question_formset.is_valid():
+        if survey_form.is_valid() or question_formset.is_valid():
             survey = survey_form.save()
             for form in question_formset:
                 question_text = form.cleaned_data.get('question_text')
@@ -923,3 +923,20 @@ def create_survey(request):
         question_formset = formset_factory(QuestionForm)()
 
     return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})
+
+@login_required(login_url='Userlogin')
+def view_survey(request, survey_id):
+    survey = get_object_or_404(Survey, id=survey_id)
+    questions = Question.objects.filter(survey=survey)
+    if request.method == 'POST':
+        form = AnswerForm(request.POST, questions=questions)  # Passing questions as parameter
+        if form.is_valid():
+            for question in questions:
+                answer_text = form.cleaned_data.get(f'question_{question.id}')
+                if answer_text:
+                    answer = Answer.objects.create(user=request.user, question=question, answer_text=answer_text)
+            return redirect('doctor-dashboard')
+    else:
+        form = AnswerForm(questions=questions)  # Passing questions as parameter
+
+    return render(request, 'survey.html', {'survey': survey, 'questions': questions, 'form': form})
