@@ -556,14 +556,13 @@ def delete_appointment(request, pk):
 @user_passes_test(is_patient)
 def patient_dashboard(request):
     patient = models.Patient.objects.get(user_id=request.user.id)
-    doctor = models.Doctor.objects.get(user_id=patient.assignedDoctorId)
     mydict = {
-        'patient': patient,
-        'doctorName': doctor.get_name,
-        'doctorMobile': doctor.mobile,
-        'doctorAddress': doctor.address,
-        'doctorDepartment': doctor.department,
-        'admitDate': patient.admitDate,
+        'PatientName': patient.get_name,
+        'UserName': patient.get_name,
+        'Address': patient.address,
+        'Mobile': patient.mobile,
+        'a': patient.assignedDoctorId,
+        'AdmitDate': patient.admitDate,
     }
     return render(request, 'patient_dashboard.html', context=mydict)
 
@@ -630,61 +629,62 @@ from django.http import HttpResponse
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
-    html = template.render(context_dict)
+    html  = template.render(context_dict)
     result = io.BytesIO()
     pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")), result)
     if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
+        return HttpResponse(result.getvalue(), content_type='SpeedHealthLine/pdf')
     return
 
 
-def download_pdf(request, pk):
-    dischargeDetails = models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
-    dict = {
-        'patientName': dischargeDetails[0].patientName,
-        'assignedDoctorName': dischargeDetails[0].assignedDoctorName,
-        'mobile': dischargeDetails[0].mobile,
-        'admitDate': dischargeDetails[0].admitDate,
-        'releaseDate': dischargeDetails[0].releaseDate,
-        'daySpent': dischargeDetails[0].daySpent,
-        'medicineCost': dischargeDetails[0].medicineCost,
-        'roomCharge': dischargeDetails[0].roomCharge,
-        'doctorFee': dischargeDetails[0].doctorFee,
-        'OtherCharge': dischargeDetails[0].OtherCharge,
-        'total': dischargeDetails[0].total,
+def download_pdf(request,pk):
+    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
+    dict={
+        'patientName':dischargeDetails[0].patientName,
+        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
+        'mobile':dischargeDetails[0].mobile,
+        'admitDate':dischargeDetails[0].admitDate,
+        'releaseDate':dischargeDetails[0].releaseDate,
+        'daySpent':dischargeDetails[0].daySpent,
+        'medicineCost':dischargeDetails[0].medicineCost,
+        'roomCharge':dischargeDetails[0].roomCharge,
+        'doctorFee':dischargeDetails[0].doctorFee,
+        'OtherCharge':dischargeDetails[0].OtherCharge,
+        'total':dischargeDetails[0].total,
     }
-    return render_to_pdf('download_bill.html', dict)
-@login_required(login_url='Userlogin')
+    return render_to_pdf('download_bill.html',dict)
+@login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
 def patient_discharge(request):
-    patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
-    dischargeDetails = models.PatientDischargeDetails.objects.all().filter(patientId=patient.id).order_by('-id')[:1]
-    patientDict = None
+    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
+    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=patient.id).order_by('-id')[:1]
+    patientDict=None
     if dischargeDetails:
-        patientDict = {
-            'is_discharged': True,
-            'patient': patient,
-            #'patientId': patient.id,
-            'patientName': patient.get_name,
-            'assignedDoctorName': dischargeDetails[0].assignedDoctorName,
-            'mobile': patient.mobile,
-            'admitDate': patient.admitDate,
-            'releaseDate': dischargeDetails[0].releaseDate,
-            'daySpent': dischargeDetails[0].daySpent,
-            'medicineCost': dischargeDetails[0].medicineCost,
-            'roomCharge': dischargeDetails[0].roomCharge,
-            'doctorFee': dischargeDetails[0].doctorFee,
-            'OtherCharge': dischargeDetails[0].OtherCharge,
-            'total': dischargeDetails[0].total,
+        patientDict ={
+        'is_discharged':True,
+        'patient':patient,
+        'patientId':patient.id,
+        'patientName':patient.get_name,
+        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
+        'address':patient.address,
+        'mobile':patient.mobile,
+        'admitDate':patient.admitDate,
+        'releaseDate':dischargeDetails[0].releaseDate,
+        'daySpent':dischargeDetails[0].daySpent,
+        'medicineCost':dischargeDetails[0].medicineCost,
+        'roomCharge':dischargeDetails[0].roomCharge,
+        'doctorFee':dischargeDetails[0].doctorFee,
+        'OtherCharge':dischargeDetails[0].OtherCharge,
+        'total':dischargeDetails[0].total,
         }
         print(patientDict)
     else:
-        patientDict = {
-            'is_discharged': False,
-            'patient': patient,
-            'patientId': request.user.id,
+        patientDict={
+            'is_discharged':False,
+            'patient':patient,
+            'patientId':request.user.id,
         }
-    return render(request, 'patient_discharge.html', context=patientDict)
+    return render(request,'patient_discharge.html',context=patientDict)
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_discharge_patient(request):

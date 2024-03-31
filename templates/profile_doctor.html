@@ -10,11 +10,10 @@
     <h1>Update Profile</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <!-- Display profile picture -->
-        {% if doctor.profile_pic %}
-            <img src="{{ doctor.profile_pic.url }}" alt="Profile Picture">
+        {% if doctor.certificate_file %}
+            <img src="{{ doctor.certificate_file.url }}" alt="certificate_file ">
         {% endif %}
-        <input type="file" name="profile_pic">
+        <input type="file" name="certificate_file">
         <br>
         <!-- Display user's first and last name -->
         <label for="first_name">First Name:</label>

@@ -31,9 +31,8 @@
         <tr>
           <th>Doctor Name</th>
           <th>Description</th>
-          <th>Date</th>
           <th>Time</th>
-          <th>Timeslots</th>
+          <th>date</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -41,11 +40,10 @@
       <tr>
         <td>{{ a.doctorName }}</td>
         <td>{{ a.description }}</td>
-        <td>{{ a.appointmentDate }}</td>
         <td>{{ a.appointmentTime }}</td>
         <td>
-          {% for slot in a.timeslots.all %}
-            {{ slot.date }} - {{ slot.time }} <br>
+          {% for date in a.timeslots.all %}
+            {{ date.date }}  <br>
           {% endfor %}
         </td>
         {% if a.status %}
