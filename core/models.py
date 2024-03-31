@@ -100,3 +100,21 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"Appointment with {self.doctorName} on {self.appointmentDate} at {self.appointmentTime}"
+from django.db import models
+
+class Survey(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+
+class Question(models.Model):
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=255)
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    option_text = models.CharField(max_length=255)
+
+class Answer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    option = models.ForeignKey(Option, on_delete=models.CASCADE)

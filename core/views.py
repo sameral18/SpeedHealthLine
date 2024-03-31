@@ -14,7 +14,8 @@ from datetime import date, timezone, datetime
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm, PatientAppointmentForm
+from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm, \
+    PatientAppointmentForm, SurveyForm, SurveyQuestionFormSet
 from .models import Doctor, Patient, Appointment, DoctorSchedule
 
 
@@ -899,4 +900,26 @@ def add_doctor_schedule(request):
         form = DoctorScheduleForm()
 
     return render(request, 'doctor_schedule_form.html', {'form': form})
+from django.forms import formset_factory
+from django.shortcuts import render, redirect
+from .forms import SurveyForm, QuestionForm
+from .models import Survey, Question
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def create_survey(request):
+    if request.method == 'POST':
+        survey_form = SurveyForm(request.POST)
+        question_formset = formset_factory(QuestionForm)(request.POST)
+        if survey_form.is_valid() and question_formset.is_valid():
+            survey = survey_form.save()
+            for form in question_formset:
+                question_text = form.cleaned_data.get('question_text')
+                if question_text:
+                    Question.objects.create(survey=survey, question_text=question_text)
+            return redirect('admin-dashboard')
+    else:
+        survey_form = SurveyForm()
+        question_formset = formset_factory(QuestionForm)()
+
+    return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})

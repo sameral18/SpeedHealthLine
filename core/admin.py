@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Doctor, Patient, Appointment, PatientDischargeDetails
+from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey, Option, Answer
 
 
 # Register your models here.
@@ -17,3 +17,21 @@ admin.site.register(Patient, PatientAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Appointment, AppointmentAdmin)
 
+class OptionInline(admin.TabularInline):
+    model = Option
+    extra = 1
+
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [OptionInline]
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    extra = 1
+
+class SurveyAdmin(admin.ModelAdmin):
+    inlines = [QuestionInline]
+
+admin.site.register(Survey, SurveyAdmin)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(Option)
+admin.site.register(Answer)

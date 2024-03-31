@@ -102,3 +102,20 @@ class DoctorScheduleForm(forms.ModelForm):
     class Meta:
         model = DoctorSchedule
         fields = ['date', 'time']
+# forms.py
+from django import forms
+from django.forms import formset_factory
+from .models import Survey, Question
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['question_text']
+
+SurveyQuestionFormSet = formset_factory(QuestionForm, extra=1)
+
+class SurveyForm(forms.ModelForm):
+    class Meta:
+        model = Survey
+        fields = ['title', 'description', ]
+
