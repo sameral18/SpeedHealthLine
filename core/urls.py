@@ -64,12 +64,16 @@ urlpatterns = [
     path('admin-appointment', admin_appointment, name='admin-appointment'),
     path('admin-view-appointment', admin_view_appointment, name='admin-view-appointment'),
     path('admin-add-appointment', admin_add_appointment, name='admin-add-appointment'),
+
     path('doctor-approve-appointment', doctor_approve_appointment, name='doctor-approve-appointment'),
+
     path('approve-appointment/<int:pk>', approve_appointment, name='approve-appointment'),
     path('reject-appointment/<int:pk>', reject_appointment, name='reject-appointment'),
+
     path('patient-appointment', patient_appointment, name='patient-appointment'),
     path('patient-book-appointment', patient_book_appointment, name='patient-book-appointment'),
     path('patient-view-appointment', patient_view_appointment, name='patient-view-appointment'),
+
     path('patient-doctor', patient_doctor, name='patient-doctor'),
     path('searchdoctor', search_doctor, name='searchdoctor'),
     path('doctor-dashboard', doctor_dashboard, name='doctor-dashboard'),

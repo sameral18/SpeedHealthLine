@@ -88,19 +88,18 @@ class DoctorSchedule(models.Model):
         return f"Doctor: {self.doctor.first_name}, Date: {self.date}, Time: {self.time}"
 
 class Appointment(models.Model):
-    patientId=models.PositiveIntegerField(null=True,default=0)
-    doctorId=models.PositiveIntegerField(null=True,default=0)
+    patientId = models.PositiveIntegerField(null=True, default=0)
+    doctorId = models.PositiveIntegerField(null=True, default=0)
     patientName = models.CharField(max_length=40, null=True)
     doctorName = models.CharField(max_length=40, null=True)
     appointmentDate = models.DateField(null=True)
     appointmentTime = models.TimeField(null=True)
-    timeslots = models.ManyToManyField(DoctorSchedule,null=True)
+    timeslots = models.ManyToManyField(DoctorSchedule, blank=True)
     description = models.TextField(max_length=500)
     status = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Appointment with {self.doctorName} on {self.appointmentDate} at {self.appointmentTime}"
-from django.db import models
 
 class Survey(models.Model):
     title = models.CharField(max_length=100)
@@ -118,4 +117,7 @@ class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.ForeignKey(Option, on_delete=models.CASCADE)
-    answer_text = models.TextField()
+    answer_text = models.TextField(default='')  # Specify a default value here
+
+    def __str__(self):
+        return f"Answer for question '{self.question.question_text}'"

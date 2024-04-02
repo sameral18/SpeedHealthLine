@@ -56,10 +56,29 @@ class PatientForm(forms.ModelForm):
 
 class AppointmentForm(forms.ModelForm):
     doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
-    patientId=forms.ModelChoiceField(queryset=models.Patient.objects.all().filter(status=True),empty_label="Patient Name and Symptoms", to_field_name="user_id")
+    patientId=forms.ModelChoiceField(queryset=models.Patient.objects.all().filter(status=True),empty_label="Patient Name ", to_field_name="user_id")
+    appointmentDate = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Date'}))
+    appointmentTime = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Time'}))
+    timeslots = forms.ModelChoiceField(queryset=DoctorSchedule.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Timeslots'}))
+
     class Meta:
-        model=models.Appointment
-        fields=['description','status']
+        model = Appointment
+        fields = ['description', 'appointmentDate', 'appointmentTime', 'timeslots']
+
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'doctorId' in self.data:
+            try:
+                doctor_id = int(self.data.get('doctorId'))
+                self.fields['timeslots'].queryset = DoctorSchedule.objects.filter(doctor_id=doctor_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty queryset
+        elif self.instance.pk:
+            self.fields['timeslots'].queryset = self.instance.doctor.timeslots.all()
 
 
 

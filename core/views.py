@@ -1,22 +1,18 @@
-from calendar import Calendar
-
-from django.contrib import messages
-from django.contrib.admin.helpers import AdminForm
 from django.contrib.auth.hashers import make_password
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+
+from django.shortcuts import  reverse, get_object_or_404
 from . import forms, models
-from django.contrib.auth.models import Group, User
-from django.http import HttpResponseRedirect
+from django.contrib.auth.models import Group
+
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
-from datetime import date, timezone, datetime
+from datetime import date
 from django.conf import settings
 from django.db.models import Q
 
-from .forms import DoctorForm, PatientForm, AdminSigupForm, AdminProfileForm, DoctorScheduleForm, \
-    PatientAppointmentForm, SurveyForm, SurveyQuestionFormSet, AnswerForm
-from .models import Doctor, Patient, Appointment, DoctorSchedule, Answer
+from .forms import AdminProfileForm, DoctorScheduleForm, \
+    AnswerForm
+from .models import Answer
 
 
 def home_page(request):
@@ -398,47 +394,44 @@ def admin_view_appointment(request):
     return render(request, 'admin_view_appointment.html', {'appointments': appointments})
 
 
+from django.urls import reverse
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from . import models
+from . import forms
+
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_add_appointment(request):
-    appointmentForm = forms.AppointmentForm()
-    mydict = {'appointmentForm': appointmentForm, }
     if request.method == 'POST':
         appointmentForm = forms.AppointmentForm(request.POST)
         if appointmentForm.is_valid():
             appointment = appointmentForm.save(commit=False)
-            appointment.doctorId = request.POST.get('doctorId')
-            appointment.patientId = request.POST.get('patientId')
-            appointment.doctorName = models.User.objects.get(id=request.POST.get('doctorId')).first_name
-            appointment.patientName = models.User.objects.get(id=request.POST.get('patientId')).first_name
+            doctor_id = appointmentForm.cleaned_data['doctorId'].user_id
+            patient_id = appointmentForm.cleaned_data['patientId'].user_id
+            # Retrieve doctor and patient names
+            doctor = models.User.objects.get(id=doctor_id)
+            patient = models.User.objects.get(id=patient_id)
+            appointment.doctorId = doctor_id
+            appointment.patientId = patient_id
+            appointment.doctorName = doctor.first_name
+            appointment.patientName = patient.first_name
+            # Check if doctor name and department match
+            if doctor.first_name != appointmentForm.cleaned_data['doctorId'].user.first_name:
+                messages.error(request, 'Doctor name or department does not match.')
+                return redirect('admin-add-appointment')
             appointment.status = True
             appointment.save()
-        return HttpResponseRedirect('admin-view-appointment')
-    return render(request, 'admin_add_appointment.html', context=mydict)
+            return HttpResponseRedirect('admin-view-appointment')
+    else:
+        appointmentForm = forms.AppointmentForm()
+
+    return render(request, 'admin_add_appointment.html', {'appointmentForm': appointmentForm})
 
 
-@login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def doctor_approve_appointment(request):
-    # those whose approval are needed
-    appointments = models.Appointment.objects.all().order_by('-id')
-    return render(request, 'doctor_approve_appointment.html', {'appointments': appointments})
 
-
-@login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def approve_appointment(request, pk):
-    appointment = models.Appointment.objects.get(id=pk)
-    appointment.save()
-    return redirect('doctor-approve-appointment')
-
-
-@login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def reject_appointment(request, pk):
-    appointment = models.Appointment.objects.get(id=pk)
-    appointment.delete()
-    return redirect('doctor-approve-appointment')
 
 
 # ---------------------------------------------------------------------------------
@@ -515,15 +508,17 @@ def doctor_view_appointment(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_delete_appointment(request):
-    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
-    patientid = []
-    for a in appointments:
-        doctor = a.timeslots.doctor
-        patientid.append(a.patientId)
-    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
-    appointments = zip(appointments, patients)
-    return render(request, 'doctor_delete_appointment.html', {'appointments': appointments, 'doctor': doctor})
+    doctor = models.Doctor.objects.get(user_id=request.user.id)  # Get the doctor associated with the current user
+    appointments = models.Appointment.objects.filter(status=True, doctorId=request.user.id)
+    patients = models.Patient.objects.filter(status=True, id__in=appointments.values_list('patientId', flat=True))
+    appointments_with_doctor = []
+    for appointment in appointments:
+        timeslots = appointment.timeslots.all()
+        if timeslots.exists():  # Check if there are associated timeslots
+            doctor = timeslots.first().doctor
+        appointments_with_doctor.append((appointment, doctor))
+    return render(request, 'doctor_delete_appointment.html', {'appointments': appointments_with_doctor, 'doctor': doctor})
+
 
 
 @login_required(login_url='Userlogin')
@@ -535,8 +530,8 @@ def delete_appointment(request, pk):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
-        doctor = a.timeslots.doctor
-        #patientid.append(a.patientId)
+        doctor = a.timeslots.all().first().doctor
+        patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'doctor_delete_appointment.html', {'appointments': appointments, 'doctor': doctor})
@@ -545,7 +540,29 @@ def delete_appointment(request, pk):
 # ---------------------------------------------------------------------------------
 # ------------------------ DOCTOR RELATED VIEWS END ------------------------------
 # ---------------------------------------------------------------------------------
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_approve_appointment(request):
+    # those whose approval are needed
+    appointments = models.Appointment.objects.filter(status=False).order_by('-id')
+    return render(request, 'doctor_approve_appointment.html', {'appointments': appointments})
 
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def approve_appointment(request, pk):
+    appointment = models.Appointment.objects.get(id=pk)
+    appointment.status=True
+    appointment.save()
+    return redirect('doctor-approve-appointment')
+
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def reject_appointment(request, pk):
+    appointment = models.Appointment.objects.get(id=pk)
+    appointment.delete()
+    return redirect('doctor-approve-appointment')
 
 # ---------------------------------------------------------------------------------
 # ------------------------ PATIENT RELATED VIEWS START ------------------------------

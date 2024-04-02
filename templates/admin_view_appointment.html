@@ -33,19 +33,28 @@
           <th>Patient Name</th>
           <th>Description</th>
           <th>Date</th>
+          <th>appointmentTime</th>
+          {% for field in appointments.0.keys %}
+            <th>{{ field }}</th>
+          {% endfor %}
         </tr>
       </thead>
-      {% for a in appointments %}
-      <tr>
-        <td> {{a.doctorName}}</td>
-        <td>{{a.patientName}}</td>
-        <td>{{a.description}}</td>
-        <td>{{a.appointmentDate}}</td>
-      </tr>
-      {% endfor %}
+      <tbody>
+        {% for a in appointments %}
+          <tr>
+            <td>{{ a.doctorName }}</td>
+            <td>{{ a.patientName }}</td>
+            <td>{{ a.description }}</td>
+            <td>{{ a.appointmentDate }}</td>
+            <td>{{ a.appointmentTime }}</td>
+              {% for value in a.values %}
+              <td>{{ value }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </div>
 </div>
-
 
 {% endblock content %}
