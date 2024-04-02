@@ -40,5 +40,3 @@ The system caters to three main user roles: administrators, doctors, and patient
 
 © Moataz Elamor, Samer Alkrenawi, Ibrahim Azabarga, Mohammed Alnbbari.<br>
 This project was developed as part of the "FUNDAMENTALS IN SOFTWARE ENGINEERING" course at SCE College.
-
-## Enjoy!
