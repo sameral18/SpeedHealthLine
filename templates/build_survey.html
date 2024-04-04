@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey</title>
+    <title>Admin Show Survey</title>
     <style>
         /* Add your custom CSS styles here */
         /* Example styles */
@@ -32,23 +32,6 @@
         .question-text {
             font-weight: bold;
         }
-        .answer-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        .submit-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .submit-btn:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
@@ -58,16 +41,12 @@
             <p>{{ survey.description }}</p>
         </div>
         <div class="survey-questions">
-            <form method="post">
-                {% csrf_token %}
-                {% for question in questions %}
-                    <div class="question">
-                        <p class="question-text">{{ question.question_text }}</p>
-                        <input type="text" name="question_{{ question.id }}" class="answer-input">
-                    </div>
-                {% endfor %}
-                <button type="submit" class="submit-btn">Submit Answers</button>
-            </form>
+            <h2>Questions</h2>
+            {% for question in questions %}
+                <div class="question">
+                    <p class="question-text">{{ question.question_text }}</p>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </body>

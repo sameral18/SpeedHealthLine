@@ -106,80 +106,42 @@
   </style>
 </head>
 
-<body>
 
-  <br><br><br>
+<body>
   <div class="invoice-box">
     <table cellpadding="0" cellspacing="0">
+      <!-- Page title and admission information -->
       <tr class="top">
         <td colspan="2">
-          <table>
-            <tr>
-              <td class="title">
-                <h5>SpeedHealthLine</h5>
-              </td>
-
-              <td>
-
-                Admit Date: {{admitDate}}<br>
-                Release Date: {{releaseDate}}<br>
-                Days Spent: {{daySpent}}
-              </td>
-            </tr>
-          </table>
+          <h2>SpeedHealthLine</h2>
+          <p>Admission Date: {{admitDate}}</p>
+          <p>Release Date: {{releaseDate}}</p>
+          <p>Days Spent: {{daySpent}}</p>
         </td>
       </tr>
 
+      <!-- Patient and Doctor information -->
       <tr class="information">
         <td colspan="2">
-          <table>
-            <tr>
-              <td>
-                Patient Name : {{patientName}}<br>
-                Patient Mobile : {{mobile}}<br>
-              </td>
-
-              <td>
-                Doctor Name :<br>
-                {{assignedDoctorName}}<br>
-
-              </td>
-            </tr>
-          </table>
+          <h3>Patient Information:</h3>
+          <p>Patient Name: {{patientName}}</p>
+          <p>Phone Number: {{mobile}}</p>
+          <h3>Doctor Information:</h3>
+          <p>Doctor Name: {{assignedDoctorName}}</p>
         </td>
       </tr>
 
-
-      <tr class="information">
+      <!-- Costs and amounts due -->
+      <tr class="details">
         <td colspan="2">
-          <table>
-            <tr>
-
-            </tr>
-          </table>
+          <h3>Costs:</h3>
+          <p>Room Charge ({{daySpent}} days): {{roomCharge}}</p>
+          <p>Doctor's Fee: {{doctorFee}}</p>
+          <p>Medicine Cost: {{medicineCost}}</p>
+          <p>Other Charges: {{OtherCharge}}</p>
+          <h3>Total: {{total}}</h3>
         </td>
       </tr>
-
-
-
-      <tr class="information">
-        <td colspan="2">
-          <table>
-            <tr>
-              <td>
-                Charges :<br><br>
-                Room Charge of {{daySpent}} Days : {{roomCharge}}<br>
-                Doctor Fee : {{doctorFee}}<br>
-                Medicine Cost : {{medicineCost}}<br>
-                Other Charge : {{OtherCharge}} <br><br>
-                &nbsp &nbsp &nbsp &nbsp &nbsp Total  : {{total}}
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-
-
     </table>
   </div>
 </body>

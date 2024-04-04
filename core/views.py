@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.shortcuts import  reverse, get_object_or_404
 from . import forms, models
@@ -12,7 +13,7 @@ from django.db.models import Q
 
 from .forms import AdminProfileForm, DoctorScheduleForm, \
     AnswerForm
-from .models import Answer
+from .models import Answer, Appointment
 
 
 def home_page(request):
@@ -101,7 +102,6 @@ def is_patient(user):
     return user.groups.filter(name='PATIENT').exists()
 
 
-# ---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
 
 from django.contrib.auth import logout
 
@@ -508,17 +508,15 @@ def doctor_view_appointment(request):
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_delete_appointment(request):
-    doctor = models.Doctor.objects.get(user_id=request.user.id)  # Get the doctor associated with the current user
-    appointments = models.Appointment.objects.filter(status=True, doctorId=request.user.id)
-    patients = models.Patient.objects.filter(status=True, id__in=appointments.values_list('patientId', flat=True))
-    appointments_with_doctor = []
-    for appointment in appointments:
-        timeslots = appointment.timeslots.all()
-        if timeslots.exists():  # Check if there are associated timeslots
-            doctor = timeslots.first().doctor
-        appointments_with_doctor.append((appointment, doctor))
-    return render(request, 'doctor_delete_appointment.html', {'appointments': appointments_with_doctor, 'doctor': doctor})
-
+    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
+    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
+    patientid = []
+    for a in appointments:
+        doctor = a.timeslots.all().first().doctor
+        patientid.append(a.patientId)
+    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
+    appointments = zip(appointments, patients)
+    return render(request, 'doctor_delete_appointment.html', {'appointments': appointments, 'doctor': doctor})
 
 
 @login_required(login_url='Userlogin')
@@ -581,58 +579,64 @@ def patient_dashboard(request):
     }
     return render(request, 'patient_dashboard.html', context=mydict)
 
-@login_required(login_url='Userlogin')
+@login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_discharge_patient(request):
-    patients = models.Patient.objects.all().filter(status=True)
-    return render(request, 'admin_discharge_patient.html', {'patients': patients})
+    patients=models.Patient.objects.all().filter(status=True)
+    return render(request,'admin_discharge_patient.html',{'patients':patients})
 
 
-@login_required(login_url='Userlogin')
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from .models import Appointment, PatientDischargeDetails
+from datetime import date
+
+@login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
-def discharge_patient(request, pk):
-    patient = models.Patient.objects.get(id=pk)
-    days = (date.today() - patient.admitDate)  # 2 days, 0:00:00
-    assignedDoctor = models.User.objects.all().filter(id=patient.assignedDoctorId)
-    d = days.days  # only how many day that is 2
-    patientDict = {
-        'patientId': pk,
-        'name': patient.get_name,
-        'mobile': patient.mobile,
-        'admitDate': patient.admitDate,
-        'todayDate': date.today(),
-        'day': d,
-        'assignedDoctorName': assignedDoctor[0].first_name,
+def discharge_patient(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    days=(date.today()-patient.admitDate)
+    assignedDoctor=models.User.objects.all().filter()
+    d=days.days
+    patientDict={
+        'patientId':pk,
+        'name':patient.get_name,
+        'mobile':patient.mobile,
+        'address':patient.address,
+        'admitDate':patient.admitDate,
+        'todayDate':date.today(),
+        'day':d,
+        'assignedDoctorName':assignedDoctor[0].first_name,
     }
     if request.method == 'POST':
-        feeDict = {
-            'roomCharge': int(request.POST['roomCharge']) * int(d),
-            'doctorFee': request.POST['doctorFee'],
-            'medicineCost': request.POST['medicineCost'],
-            'OtherCharge': request.POST['OtherCharge'],
-            'total': (int(request.POST['roomCharge']) * int(d)) + int(request.POST['doctorFee']) + int(
-                request.POST['medicineCost']) + int(request.POST['OtherCharge'])
+        feeDict ={
+            'roomCharge':int(request.POST['roomCharge'])*int(d),
+            'doctorFee':request.POST['doctorFee'],
+            'medicineCost' : request.POST['medicineCost'],
+            'OtherCharge' : request.POST['OtherCharge'],
+            'total':(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
         }
         patientDict.update(feeDict)
-        # for updating to database patientDischargeDetails (pDD)
-        pDD = models.PatientDischargeDetails()
-        pDD.patientId = pk
-        pDD.patientName = patient.get_name
-        pDD.assignedDoctorName = assignedDoctor[0].first_name
-        pDD.address = patient.address
-        pDD.mobile = patient.mobile
-        pDD.admitDate = patient.admitDate
-        pDD.releaseDate = date.today()
-        pDD.daySpent = int(d)
-        pDD.medicineCost = int(request.POST['medicineCost'])
-        pDD.roomCharge = int(request.POST['roomCharge']) * int(d)
-        pDD.doctorFee = int(request.POST['doctorFee'])
-        pDD.OtherCharge = int(request.POST['OtherCharge'])
-        pDD.total = (int(request.POST['roomCharge']) * int(d)) + int(request.POST['doctorFee']) + int(
-            request.POST['medicineCost']) + int(request.POST['OtherCharge'])
+        pDD=models.PatientDischargeDetails()
+        pDD.patientId=pk
+        pDD.patientName=patient.get_name
+        pDD.assignedDoctorName=assignedDoctor[0].first_name
+        pDD.address=patient.address
+        pDD.mobile=patient.mobile
+        pDD.admitDate=patient.admitDate
+        pDD.releaseDate=date.today()
+        pDD.daySpent=int(d)
+        pDD.medicineCost=int(request.POST['medicineCost'])
+        pDD.roomCharge=int(request.POST['roomCharge'])*int(d)
+        pDD.doctorFee=int(request.POST['doctorFee'])
+        pDD.OtherCharge=int(request.POST['OtherCharge'])
+        pDD.total=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
         pDD.save()
-        return render(request, 'patient_final_bill.html', context=patientDict)
-    return render(request, 'patient_generate_bill.html', context=patientDict)
+        return render(request,'patient_final_bill.html',context=patientDict)
+    return render(request,'patient_generate_bill.html',context=patientDict)
+
+
 
 
 import io
@@ -648,7 +652,7 @@ def render_to_pdf(template_src, context_dict):
     result = io.BytesIO()
     pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")), result)
     if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='SpeedHealthLine/pdf')
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
     return
 
 
@@ -919,22 +923,28 @@ from django.shortcuts import render, redirect
 from .forms import SurveyForm, QuestionForm
 from .models import Survey, Question
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.forms import formset_factory
+from .forms import SurveyForm, QuestionForm, AnswerForm
+from .models import Survey, Question, Answer
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
-def create_survey(request):
+def admin_create_survey(request):
+    question_formset = formset_factory(QuestionForm)
     if request.method == 'POST':
         survey_form = SurveyForm(request.POST)
-        question_formset = formset_factory(QuestionForm)(request.POST)
-        if survey_form.is_valid() or question_formset.is_valid():
+        question_formset = question_formset(request.POST)
+        if survey_form.is_valid() and question_formset.is_valid():
             survey = survey_form.save()
             for form in question_formset:
                 question_text = form.cleaned_data.get('question_text')
                 if question_text:
                     Question.objects.create(survey=survey, question_text=question_text)
-            return redirect('admin-dashboard')
+            return redirect('admin-show-survey', survey_id=survey.id)
     else:
         survey_form = SurveyForm()
-        question_formset = formset_factory(QuestionForm)()
 
     return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})
 
@@ -943,14 +953,14 @@ def view_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     questions = Question.objects.filter(survey=survey)
     if request.method == 'POST':
-        form = AnswerForm(request.POST, questions=questions)  # Passing questions as parameter
+        form = AnswerForm(request.POST, questions=questions)
         if form.is_valid():
             for question in questions:
                 answer_text = form.cleaned_data.get(f'question_{question.id}')
                 if answer_text:
-                    answer = Answer.objects.create(user=request.user, question=question, answer_text=answer_text)
+                    Answer.objects.create(user=request.user, question=question, answer_text=answer_text)
             return redirect('doctor-dashboard')
     else:
-        form = AnswerForm(questions=questions)  # Passing questions as parameter
+        form = AnswerForm(questions=questions)
 
     return render(request, 'survey.html', {'survey': survey, 'questions': questions, 'form': form})

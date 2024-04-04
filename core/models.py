@@ -63,15 +63,13 @@ class Doctor(models.Model):
         return "{} ({})".format(self.user.first_name,self.department)
 
 class PatientDischargeDetails(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
+    patientId=models.PositiveIntegerField(null=True,default=1)
     patientName=models.CharField(max_length=40)
     assignedDoctorName=models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=True)
-
     admitDate=models.DateField(null=False)
     releaseDate=models.DateField(null=False)
     daySpent=models.PositiveIntegerField(null=False)
-
     roomCharge=models.PositiveIntegerField(null=False)
     medicineCost=models.PositiveIntegerField(null=False)
     doctorFee=models.PositiveIntegerField(null=False)
