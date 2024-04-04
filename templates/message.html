@@ -1,4 +1,4 @@
-{%  extends 'base.html' %}
+{%  extends 'admin_base.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
@@ -25,11 +25,12 @@ Settings
     </thead>
     <tbody>
     {% for msg in object_list %}
-    {% if msg.to.username == request.user.username %}
+    {% if msg.to.username == request.user.username  %}
       <tr>
         <td>{{msg.msg_from}}</td>
         <td>{{msg.subject}}</td>
         <td>{{msg.message}}</td>
+
       </tr>
     {% endif %}
       {% endfor %}

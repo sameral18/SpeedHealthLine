@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'widget_tweaks',
-
+    'crispy_forms',
+    'bootstrap4',
+    'django_bootstrap5',
+    'crispy_bootstrap5',
 
 ]
 
@@ -127,3 +130,5 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_COOKIE_AGE = 3600  # Set session timeout to 1 hour (in seconds)
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -964,7 +964,7 @@ class add_messageView(CreateView):
     model = Message
     form_class = AddMessageForm
     template_name = 'add-message.html'
-    success_url = '/profile/'
+    success_url = '/'
 
 class all_messagesView(ListView):
     model = Message
