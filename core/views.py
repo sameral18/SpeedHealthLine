@@ -1,8 +1,8 @@
+from django.views.generic import ListView
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ObjectDoesNotExist
 
-from django.shortcuts import  reverse, get_object_or_404
-from . import forms, models
+from django.views.generic import CreateView
+
 from django.contrib.auth.models import Group
 
 from django.core.mail import send_mail
@@ -12,8 +12,8 @@ from django.conf import settings
 from django.db.models import Q
 
 from .forms import AdminProfileForm, DoctorScheduleForm, \
-    AnswerForm
-from .models import Answer, Appointment
+    AnswerForm, AddMessageForm
+from .models import Answer, Appointment, Message
 
 
 def home_page(request):
@@ -918,11 +918,6 @@ def add_doctor_schedule(request):
         form = DoctorScheduleForm()
 
     return render(request, 'doctor_schedule_form.html', {'form': form})
-from django.forms import formset_factory
-from django.shortcuts import render, redirect
-from .forms import SurveyForm, QuestionForm
-from .models import Survey, Question
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import formset_factory
@@ -936,7 +931,7 @@ def admin_create_survey(request):
     if request.method == 'POST':
         survey_form = SurveyForm(request.POST)
         question_formset = question_formset(request.POST)
-        if survey_form.is_valid() and question_formset.is_valid():
+        if survey_form.is_valid() or question_formset.is_valid():
             survey = survey_form.save()
             for form in question_formset:
                 question_text = form.cleaned_data.get('question_text')
@@ -949,6 +944,7 @@ def admin_create_survey(request):
     return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})
 
 @login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
 def view_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     questions = Question.objects.filter(survey=survey)
@@ -964,3 +960,12 @@ def view_survey(request, survey_id):
         form = AnswerForm(questions=questions)
 
     return render(request, 'survey.html', {'survey': survey, 'questions': questions, 'form': form})
+class add_messageView(CreateView):
+    model = Message
+    form_class = AddMessageForm
+    template_name = 'add-message.html'
+    success_url = '/profile/'
+
+class all_messagesView(ListView):
+    model = Message
+    template_name = 'message.html'

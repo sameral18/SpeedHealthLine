@@ -9,7 +9,10 @@ from django.urls import path, include
 from django.urls import path
 from django.urls import path
 from django.contrib.auth.views import LogoutView, LoginView
+from django.contrib import admin
+from django.urls import path, include
 
+from .views import *
 from . import views
 from .views import *
 
@@ -88,6 +91,8 @@ urlpatterns = [
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
     path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
-    path('survey/<int:survey_id>/', view_survey, name='view_survey'),
+    path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  # Update the name here
+    path('message/', all_messagesView.as_view(), name='message'),
+    path('add-message/', add_messageView.as_view(), name='add-message'),
 
 ]

@@ -1,59 +1,25 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Survey</title>
-    <style>
-        /* Add your custom CSS styles here */
-        /* Example styles */
-        body {
-            font-family: Arial, sans-serif;
-        }
-        form {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-        button[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .question-form {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-        .add-question-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-        .add-question-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+      <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+  </style>
 </head>
 <body>
     <h1>Create Survey</h1>
@@ -83,3 +49,4 @@
     </script>
 </body>
 </html>
+{% endblock content %}

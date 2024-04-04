@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 from django import forms
-from .models import Doctor, DoctorSchedule, Appointment
+from .models import Doctor, DoctorSchedule, Appointment , Message
 
 
 #for admin signup
@@ -123,7 +123,7 @@ class DoctorScheduleForm(forms.ModelForm):
         fields = ['date', 'time']
 # forms.py
 from django import forms
-from django.forms import formset_factory
+from django.forms import formset_factory, ModelForm
 from .models import Survey, Question
 
 class QuestionForm(forms.ModelForm):
@@ -144,3 +144,11 @@ class AnswerForm(forms.Form):
         super().__init__(*args, **kwargs)
         for question in questions:
             self.fields[f'question_{question.id}'] = forms.CharField(label=question.question_text, required=False)
+class AddMessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields=['to','msg_from','subject','message']
+
+
+
+

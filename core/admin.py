@@ -1,21 +1,17 @@
 from django.contrib import admin
-from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey, Option, Answer
-
+from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey, Option, Answer, Message
+from django.contrib import admin
+from .models import Survey, Patient, Doctor
 
 # Register your models here.
-class DoctorAdmin(admin.ModelAdmin):
-    pass
+
 class AppointmentAdmin(admin.ModelAdmin):
     pass
-class PatientAdmin(admin.ModelAdmin):
-    pass
+
 class PatientDischargeDetailsAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(PatientDischargeDetails, PatientDischargeDetailsAdmin)
-admin.site.register(Patient, PatientAdmin)
-admin.site.register(Doctor, DoctorAdmin)
-admin.site.register(Appointment, AppointmentAdmin)
+
 
 class OptionInline(admin.TabularInline):
     model = Option
@@ -28,10 +24,24 @@ class QuestionInline(admin.TabularInline):
     model = Question
     extra = 1
 
+
+
+
 class SurveyAdmin(admin.ModelAdmin):
-    inlines = [QuestionInline]
+    list_display = ['title', 'description']  # Customize the fields displayed in the list view
+
+class PatientAdmin(admin.ModelAdmin):
+    list_display = ['user', 'mobile', 'admitDate']  # Customize as needed
+
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = ['user', 'department', 'status']  # Customize as needed
 
 admin.site.register(Survey, SurveyAdmin)
+admin.site.register(Patient, PatientAdmin)
+admin.site.register(PatientDischargeDetails, PatientDischargeDetailsAdmin)
+admin.site.register(Doctor, DoctorAdmin)
+admin.site.register(Appointment, AppointmentAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Option)
 admin.site.register(Answer)
+admin.site.register(Message)

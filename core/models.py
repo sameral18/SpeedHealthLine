@@ -119,3 +119,8 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"Answer for question '{self.question.question_text}'"
+class Message(models.Model):
+    to=models.ForeignKey(User,on_delete=models.CASCADE)
+    msg_from=models.CharField(max_length=100,blank=True, null=True)
+    subject=models.CharField(max_length=100,blank=True, null=True)
+    message=models.TextField(max_length=250,blank=True, null=True)

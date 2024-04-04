@@ -1,38 +1,25 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+{%load static%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Show Survey</title>
-    <style>
-        /* Add your custom CSS styles here */
-        /* Example styles */
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .survey-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .survey-header {
-            background-color: #f2f2f2;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .survey-questions {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .question {
-            margin-bottom: 15px;
-        }
-        .question-text {
-            font-weight: bold;
-        }
-    </style>
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+  </style>
 </head>
 <body>
     <div class="survey-container">
@@ -51,3 +38,4 @@
     </div>
 </body>
 </html>
+{% endblock content %}
