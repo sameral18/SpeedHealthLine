@@ -33,7 +33,10 @@
           <th>Description</th>
           <th>Time</th>
           <th>date</th>
+          <th>Cancel</th>
           <th>Status</th>
+
+
         </tr>
       </thead>
       {% for a in appointments %}
@@ -46,6 +49,8 @@
             {{ date.date }}  <br>
           {% endfor %}
         </td>
+        <td><a class="btn btn-danger btn-xs" href="{% url 'delete-my-appointment' a.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+
         {% if a.status %}
           <td><span class="label label-primary">Confirmed</span></td>
         {% else %}

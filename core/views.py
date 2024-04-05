@@ -290,7 +290,7 @@ def admin_view_patient(request):
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
-def delete_patient_from_hospital(request, pk):
+def delete_patient_from_core(request, pk):
     patient = models.Patient.objects.get(id=pk)
     user = models.User.objects.get(id=patient.user_id)
     user.delete()
@@ -512,7 +512,7 @@ def doctor_delete_appointment(request):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
-        doctor = a.timeslots.all().first().doctor
+        doctor = a.timeslots
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -528,7 +528,7 @@ def delete_appointment(request, pk):
     appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     patientid = []
     for a in appointments:
-        doctor = a.timeslots.all().first().doctor
+        doctor = a.timeslots
         patientid.append(a.patientId)
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
@@ -579,62 +579,13 @@ def patient_dashboard(request):
     }
     return render(request, 'patient_dashboard.html', context=mydict)
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_discharge_patient(request):
-    patients=models.Patient.objects.all().filter(status=True)
-    return render(request,'admin_discharge_patient.html',{'patients':patients})
 
 
-from django.shortcuts import get_object_or_404
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from .models import Appointment, PatientDischargeDetails
+
+
 from datetime import date
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def discharge_patient(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    days=(date.today()-patient.admitDate)
-    assignedDoctor=models.User.objects.all().filter()
-    d=days.days
-    patientDict={
-        'patientId':pk,
-        'name':patient.get_name,
-        'mobile':patient.mobile,
-        'address':patient.address,
-        'admitDate':patient.admitDate,
-        'todayDate':date.today(),
-        'day':d,
-        'assignedDoctorName':assignedDoctor[0].first_name,
-    }
-    if request.method == 'POST':
-        feeDict ={
-            'roomCharge':int(request.POST['roomCharge'])*int(d),
-            'doctorFee':request.POST['doctorFee'],
-            'medicineCost' : request.POST['medicineCost'],
-            'OtherCharge' : request.POST['OtherCharge'],
-            'total':(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
-        }
-        patientDict.update(feeDict)
-        pDD=models.PatientDischargeDetails()
-        pDD.patientId=pk
-        pDD.patientName=patient.get_name
-        pDD.assignedDoctorName=assignedDoctor[0].first_name
-        pDD.address=patient.address
-        pDD.mobile=patient.mobile
-        pDD.admitDate=patient.admitDate
-        pDD.releaseDate=date.today()
-        pDD.daySpent=int(d)
-        pDD.medicineCost=int(request.POST['medicineCost'])
-        pDD.roomCharge=int(request.POST['roomCharge'])*int(d)
-        pDD.doctorFee=int(request.POST['doctorFee'])
-        pDD.OtherCharge=int(request.POST['OtherCharge'])
-        pDD.total=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
-        pDD.save()
-        return render(request,'patient_final_bill.html',context=patientDict)
-    return render(request,'patient_generate_bill.html',context=patientDict)
+
 
 
 
@@ -672,46 +623,8 @@ def download_pdf(request,pk):
         'total':dischargeDetails[0].total,
     }
     return render_to_pdf('download_bill.html',dict)
-@login_required(login_url='patientlogin')
-@user_passes_test(is_patient)
-def patient_discharge(request):
-    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
-    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=patient.id).order_by('-id')[:1]
-    patientDict=None
-    if dischargeDetails:
-        patientDict ={
-        'is_discharged':True,
-        'patient':patient,
-        'patientId':patient.id,
-        'patientName':patient.get_name,
-        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
-        'address':patient.address,
-        'mobile':patient.mobile,
-        'admitDate':patient.admitDate,
-        'releaseDate':dischargeDetails[0].releaseDate,
-        'daySpent':dischargeDetails[0].daySpent,
-        'medicineCost':dischargeDetails[0].medicineCost,
-        'roomCharge':dischargeDetails[0].roomCharge,
-        'doctorFee':dischargeDetails[0].doctorFee,
-        'OtherCharge':dischargeDetails[0].OtherCharge,
-        'total':dischargeDetails[0].total,
-        }
-        print(patientDict)
-    else:
-        patientDict={
-            'is_discharged':False,
-            'patient':patient,
-            'patientId':request.user.id,
-        }
-    return render(request,'patient_discharge.html',context=patientDict)
-@login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def doctor_discharge_patient(request):
-    dischargedpatients = models.PatientDischargeDetails.objects.all().distinct().filter(
-        assignedDoctorName=request.user.first_name)
-    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    return render(request, 'doctor_discharge_patient.html',
-                  {'dischargedpatients': dischargedpatients, 'doctor': doctor})
+
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_dashboard(request):
@@ -969,3 +882,107 @@ class add_messageView(CreateView):
 class all_messagesView(ListView):
     model = Message
     template_name = 'message.html'
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def delete_my_appointment(request, pk):
+    appointment = models.Appointment.objects.get(id=pk)
+    doctor = models.Doctor.objects.get(user_id=appointment.doctorId)  # for profile picture of doctor in sidebar
+
+    appointment.delete()
+    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
+    patientid = []
+    for a in appointments:
+        doctor = a.timeslots
+        patientid.append(a.patientId)
+    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
+    appointments = zip(appointments, patients)
+    return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_view_discharge_patient_view(request):
+    dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedDoctorName=request.user.first_name)
+    doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
+    return render(request,'doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_discharge_patient(request):
+    dischargedpatients = models.PatientDischargeDetails.objects.all().distinct().filter(
+        assignedDoctorName=request.user.first_name)
+    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
+    return render(request, 'doctor_discharge_patient.html',{'dischargedpatients': dischargedpatients, 'doctor': doctor})
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def discharge_patient(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    days=(date.today()-patient.admitDate)
+    assignedDoctor=models.User.objects.all().filter()
+    d=days.days
+    patientDict={
+        'patientId':pk,
+        'name':patient.get_name,
+        'mobile':patient.mobile,
+        'address':patient.address,
+        'admitDate':patient.admitDate,
+        'todayDate':date.today(),
+        'day':d,
+        'assignedDoctorName':assignedDoctor[0].first_name,
+    }
+    if request.method == 'POST':
+        feeDict ={
+            'roomCharge':int(request.POST['roomCharge'])*int(d),
+            'doctorFee':request.POST['doctorFee'],
+            'medicineCost' : request.POST['medicineCost'],
+            'OtherCharge' : request.POST['OtherCharge'],
+            'total':(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
+        }
+        patientDict.update(feeDict)
+        pDD=models.PatientDischargeDetails()
+        pDD.patientId=pk
+        pDD.patientName=patient.get_name
+        pDD.assignedDoctorName=assignedDoctor[0].first_name
+        pDD.address=patient.address
+        pDD.mobile=patient.mobile
+        pDD.admitDate=patient.admitDate
+        pDD.releaseDate=date.today()
+        pDD.daySpent=int(d)
+        pDD.medicineCost=int(request.POST['medicineCost'])
+        pDD.roomCharge=int(request.POST['roomCharge'])*int(d)
+        pDD.doctorFee=int(request.POST['doctorFee'])
+        pDD.OtherCharge=int(request.POST['OtherCharge'])
+        pDD.total=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
+        pDD.save()
+        return render(request,'patient_final_bill.html',context=patientDict)
+    return render(request,'patient_generate_bill.html',context=patientDict)
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def patient_discharge(request):
+    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
+    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=patient.id).order_by('-id')[:1]
+    patientDict=None
+    if dischargeDetails:
+        patientDict ={
+        'is_discharged':True,
+        'patient':patient,
+        'patientId':patient.id,
+        'patientName':patient.get_name,
+        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
+        'address':patient.address,
+        'mobile':patient.mobile,
+        'admitDate':patient.admitDate,
+        'releaseDate':dischargeDetails[0].releaseDate,
+        'daySpent':dischargeDetails[0].daySpent,
+        'medicineCost':dischargeDetails[0].medicineCost,
+        'roomCharge':dischargeDetails[0].roomCharge,
+        'doctorFee':dischargeDetails[0].doctorFee,
+        'OtherCharge':dischargeDetails[0].OtherCharge,
+        'total':dischargeDetails[0].total,
+        }
+        print(patientDict)
+    else:
+        patientDict={
+            'is_discharged':False,
+            'patient':patient,
+            'patientId':request.user.id,
+        }
+    return render(request,'patient_discharge.html',context=patientDict)

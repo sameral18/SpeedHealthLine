@@ -20,7 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_page, name=''),
     path('doctor-calender/', add_doctor_schedule, name='doctor-calendar'),
-    path('admin-discharge-patient', admin_discharge_patient, name='admin-discharge-patient'),
     path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
     path('download-pdf/<int:pk>', download_pdf, name='download-pdf'),
     path('aboutus', aboutus),
@@ -43,7 +42,7 @@ urlpatterns = [
     path('admin-view-doctor', admin_view_doctor, name='admin-view-doctor'),
     path('delete-doctor-from-core/<int:pk>', delete_doctor_from_core,
          name='delete-doctor-from-core'),
-    path('delete-patient/<int:pk>', views.delete_patient_from_hospital,
+    path('delete-patient/<int:pk>', views.delete_patient_from_core,
          name='delete-patient'),
 
     path('update-doctor/<int:pk>', update_doctor, name='update-doctor'),
@@ -55,8 +54,7 @@ urlpatterns = [
          name='admin-view-doctor-specialisation'),
     path('admin-patient', admin_patient, name='admin-patient'),
     path('admin-view-patient', admin_view_patient, name='admin-view-patient'),
-    path('delete-patient-from-core/<int:pk>', delete_patient_from_hospital,
-         name='delete-patient-from-core'),
+    path('delete-patient-from-core/<int:pk>', delete_patient_from_core,name='delete-patient-from-core'),
     path('update-patient/<int:pk>', update_patient, name='update-patient'),
     path('admin-add-patient', admin_add_patient, name='admin-add-patient'),
     path('admin-approve-patient', admin_approve_patient, name='admin-approve-patient'),
@@ -89,6 +87,8 @@ urlpatterns = [
     path('doctor-view-appointment', doctor_view_appointment, name='doctor-view-appointment'),
     path('doctor-delete-appointment', doctor_delete_appointment, name='doctor-delete-appointment'),
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
+    path('delete-my-appointment/<int:pk>', delete_my_appointment, name='delete-my-appointment'),
+
     path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
     path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  # Update the name here
