@@ -898,20 +898,14 @@ def delete_my_appointment(request, pk):
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
-@login_required(login_url='doctorlogin')
+
+@login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_view_discharge_patient_view(request):
     dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedDoctorName=request.user.first_name)
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
 @login_required(login_url='Userlogin')
-@user_passes_test(is_doctor)
-def doctor_discharge_patient(request):
-    dischargedpatients = models.PatientDischargeDetails.objects.all().distinct().filter(
-        assignedDoctorName=request.user.first_name)
-    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    return render(request, 'doctor_discharge_patient.html',{'dischargedpatients': dischargedpatients, 'doctor': doctor})
-@login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def discharge_patient(request,pk):
     patient=models.Patient.objects.get(id=pk)
@@ -954,7 +948,7 @@ def discharge_patient(request,pk):
         pDD.save()
         return render(request,'patient_final_bill.html',context=patientDict)
     return render(request,'patient_generate_bill.html',context=patientDict)
-@login_required(login_url='patientlogin')
+@login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_discharge(request):
     patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
@@ -986,3 +980,8 @@ def patient_discharge(request):
             'patientId':request.user.id,
         }
     return render(request,'patient_discharge.html',context=patientDict)
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def d_discharge_patient_view(request):
+    patients=models.Patient.objects.all().filter(status=True)
+    return render(request,'d_discharge_patient.html',{'patients':patients})

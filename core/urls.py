@@ -20,7 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_page, name=''),
     path('doctor-calender/', add_doctor_schedule, name='doctor-calendar'),
-    path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
     path('download-pdf/<int:pk>', download_pdf, name='download-pdf'),
     path('aboutus', aboutus),
     path('contactus', contactus),
@@ -81,18 +80,20 @@ urlpatterns = [
     path('search', search, name='search'),
     path('doctor-patient', doctor_patient, name='doctor-patient'),
     path('doctor-view-patient', doctor_view_patient, name='doctor-view-patient'),
-    path('doctor-view-discharge-patient', doctor_discharge_patient,
-         name='doctor-view-discharge-patient'),
+
     path('doctor-appointment', doctor_appointment, name='doctor-appointment'),
     path('doctor-view-appointment', doctor_view_appointment, name='doctor-view-appointment'),
     path('doctor-delete-appointment', doctor_delete_appointment, name='doctor-delete-appointment'),
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
     path('delete-my-appointment/<int:pk>', delete_my_appointment, name='delete-my-appointment'),
 
-    path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
     path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  # Update the name here
     path('message/', all_messagesView.as_view(), name='message'),
     path('add-message/', add_messageView.as_view(), name='add-message'),
+    path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
+    path('patient-discharge', patient_discharge, name='patient-discharge'),
+    path('d-discharge-patient', d_discharge_patient_view, name='d-discharge-patient'),
+    path('doctor-discharge-patient', doctor_view_discharge_patient_view, name='doctor-discharge-patient'),
 
 ]
