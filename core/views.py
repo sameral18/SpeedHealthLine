@@ -663,7 +663,7 @@ from django.contrib import messages
 from .forms import PatientAppointmentForm
 from .models import Doctor, DoctorSchedule, Patient, Answer
 
-#
+#1
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_book_appointment(request):

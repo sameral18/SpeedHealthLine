@@ -73,6 +73,7 @@ urlpatterns = [
     path('reject-appointment/<int:pk>', reject_appointment, name='reject-appointment'),
 
     path('patient-appointment', patient_appointment, name='patient-appointment'),
+    #
     path('patient-book-appointment', patient_book_appointment, name='patient-book-appointment'),
     #
     path('patient-view-appointment', patient_view_appointment, name='patient-view-appointment'),
