@@ -1009,3 +1009,32 @@ def admin_add_questions(request, survey_id):
 def admin_view_survey(request):
     surveys = Survey.objects.all()
     return render(request, 'admin_view_survey.html', {'surveys': surveys})
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def patient_answer_questions(request, survey_id):
+    survey = Survey.objects.get(id=survey_id)
+    questions = Question.objects.filter(survey=survey)
+
+    if request.method == 'POST':
+        for question in questions:
+            answer_text = request.POST.get(f'answer_{question.id}')  # نفترض أن أسماء المدخلات هي 'answer_<question_id>'
+            Answer.objects.create(question=question, answer_text=answer_text, answered_by=request.user)
+
+        return redirect('patient-dashboard')  # قم بتحويله إلى لوحة المرضى أو أي صفحة أخرى
+
+    return render(request, 'patient_answer_questions.html', {'survey': survey, 'questions': questions})
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_answer_questions(request, survey_id):
+    survey = Survey.objects.get(id=survey_id)
+    questions = Question.objects.filter(survey=survey)
+
+    if request.method == 'POST':
+        for question in questions:
+            answer_text = request.POST.get(f'answer_{question.id}')  # نفترض أن أسماء المدخلات هي 'answer_<question_id>'
+            Answer.objects.create(question=question, answer_text=answer_text, answered_by=request.user)
+
+        return redirect('doctor-dashboard')  # قم بتحويله إلى لوحة الأطباء أو أي صفحة أخرى
+
+    return render(request, 'doctor_answer_questions.html', {'survey': survey, 'questions': questions})
