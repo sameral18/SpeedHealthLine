@@ -98,7 +98,7 @@ class PatientAppointmentForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
         }
-#
+#2
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'doctorId' in self.data:
