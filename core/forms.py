@@ -84,7 +84,7 @@ class AppointmentForm(forms.ModelForm):
 
 
 
-
+#
 class PatientAppointmentForm(forms.ModelForm):
     doctorId = forms.ModelChoiceField(queryset=models.Doctor.objects.filter(status=True), empty_label="Doctor Name and Department", to_field_name="user_id", widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Doctor'}))
     appointmentDate = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Appointment Date'}))
@@ -98,7 +98,7 @@ class PatientAppointmentForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
         }
-
+#
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'doctorId' in self.data:
