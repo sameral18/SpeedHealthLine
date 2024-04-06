@@ -504,7 +504,7 @@ def doctor_view_appointment(request):
     appointments = zip(appointments, patients)
     return render(request, 'doctor_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
 
-#
+#doctor
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_delete_appointment(request):
