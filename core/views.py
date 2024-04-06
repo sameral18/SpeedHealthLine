@@ -103,7 +103,7 @@ def is_patient(user):
 
 
 from django.contrib.auth import logout
-#
+##
 def login_user(request):
     try:
         if is_admin(request.user):
