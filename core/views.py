@@ -490,7 +490,7 @@ def profile_p(request):
     doctors = models.Doctor.objects.all().filter(status=True)
     patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
     return render(request, 'profile_p.html', {'patient': patient, 'doctors': doctors})
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_view_appointment(request):
