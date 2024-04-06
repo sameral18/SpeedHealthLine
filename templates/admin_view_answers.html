@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin View Answers</title>
+</head>
+<body>
+    <h1>Admin View Answers</h1>
+    <ul>
+        {% for answer in answers %}
+            <li>{{ answer.question }} - {{ answer.answer_text }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

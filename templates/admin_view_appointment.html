@@ -1,5 +1,6 @@
-{% extends 'admin_base.html' %}
+{% extends 'doctor_base.html' %}
 {% block content %}
+{%load static%}
 
 <head>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -24,37 +25,29 @@
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Appointments</h6>
+      <h6 class="panel-title">Your Appointments</h6>
     </div>
     <table class="table table-hover" id="dev-table">
       <thead>
         <tr>
-          <th>Doctor Name</th>
           <th>Patient Name</th>
           <th>Description</th>
-          <th>Date</th>
-          <th>appointmentTime</th>
-          {% for field in appointments.0.keys %}
-            <th>{{ field }}</th>
-          {% endfor %}
+          <th>Appointment Date</th>
+          <th>Appointment Time</th>
         </tr>
       </thead>
-      <tbody>
-        {% for a in appointments %}
-          <tr>
-            <td>{{ a.doctorName }}</td>
-            <td>{{ a.patientName }}</td>
+      {% for a,p in appointments %}
+      <tr>
+<td>{{ a.patientName }}</td>
             <td>{{ a.description }}</td>
             <td>{{ a.appointmentDate }}</td>
             <td>{{ a.appointmentTime }}</td>
-              {% for value in a.values %}
-              <td>{{ value }}</td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
+
+      </tr>
+      {% endfor %}
     </table>
   </div>
 </div>
 
-{% endblock content %}
+
+{% endblock content%}

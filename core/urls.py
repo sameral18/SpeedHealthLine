@@ -87,11 +87,16 @@ urlpatterns = [
     path('delete-appointment/<int:pk>', delete_appointment, name='delete-appointment'),
     path('delete-my-appointment/<int:pk>', delete_my_appointment, name='delete-my-appointment'),
 
-    path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
-    path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  # Update the name here
+
     path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
     path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('d-discharge-patient', d_discharge_patient_view, name='d-discharge-patient'),
     path('doctor-discharge-patient', doctor_view_discharge_patient_view, name='doctor-discharge-patient'),
+
+    path('doctor-add-answers', views.admin_view_answers, name='doctor-add-answers'),
+    path('patient-add-answers', views.admin_view_answers, name='patient-add-answers'),
+    path('admin-view-answers', views.admin_view_answers, name='admin-view-answers'),
+    path('admin-add-survey', views.admin_add_survey, name='admin-add-survey'),
+    path('admin-add-quistions', views.answers_add_quistions, name='admin-add-quistions'),
 
 ]

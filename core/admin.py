@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey
-from django.contrib import admin
-from .models import Survey, Patient, Doctor
+from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey, Answer
 
 # Register your models here.
 
@@ -11,21 +9,19 @@ class AppointmentAdmin(admin.ModelAdmin):
 class PatientDischargeDetailsAdmin(admin.ModelAdmin):
     pass
 
-
-
-
-
 class QuestionAdmin(admin.ModelAdmin):
- pass
+    pass
+
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ['question', 'answer_text']  # Customize as needed
+
 class QuestionInline(admin.TabularInline):
     model = Question
     extra = 1
 
-
-
-
 class SurveyAdmin(admin.ModelAdmin):
     list_display = ['title', 'description']  # Customize the fields displayed in the list view
+    inlines = [QuestionInline]
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ['user', 'mobile', 'admitDate']  # Customize as needed
@@ -33,10 +29,10 @@ class PatientAdmin(admin.ModelAdmin):
 class DoctorAdmin(admin.ModelAdmin):
     list_display = ['user', 'department', 'status']  # Customize as needed
 
-admin.site.register(Survey, SurveyAdmin)
+admin.site.register(Survey)
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(PatientDischargeDetails, PatientDischargeDetailsAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Appointment, AppointmentAdmin)
-admin.site.register(Question, QuestionAdmin)
-
+admin.site.register(Question)
+admin.site.register(Answer)

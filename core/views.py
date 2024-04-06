@@ -660,7 +660,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from .forms import PatientAppointmentForm
-from .models import Doctor, DoctorSchedule, Patient
+from .models import Doctor, DoctorSchedule, Patient, Answer
+
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
@@ -836,44 +837,6 @@ from django.forms import formset_factory
 from .forms import SurveyForm, QuestionForm, AnswerForm
 from .models import Survey, Question
 
-@login_required(login_url='Userlogin')
-@user_passes_test(is_admin)
-def admin_create_survey(request):
-    question_formset = formset_factory(QuestionForm)
-    if request.method == 'POST':
-        survey_form = SurveyForm(request.POST)
-        question_formset = question_formset(request.POST)
-        if survey_form.is_valid() or question_formset.is_valid():
-            survey = survey_form.save()
-            for form in question_formset:
-                question_text = form.cleaned_data.get('question_text')
-                if question_text:
-                    Question.objects.create(survey=survey, question_text=question_text)
-            return redirect('admin-show-survey', survey_id=survey.id)
-    else:
-        survey_form = SurveyForm()
-
-    return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})
-
-@login_required(login_url='Userlogin')
-@user_passes_test(is_admin)
-def view_survey(request, survey_id):
-    survey = get_object_or_404(Survey, id=survey_id)
-    questions = Question.objects.filter(survey=survey)
-    if request.method == 'POST':
-        form = AnswerForm(request.POST, questions=questions)
-        if form.is_valid():
-            for question in questions:
-                answer_text = form.cleaned_data.get(f'question_{question.id}')
-                if answer_text:
-                    Answer.objects.create(user=request.user, question=question, answer_text=answer_text)
-            return redirect('doctor-dashboard')
-    else:
-        form = AnswerForm(questions=questions)
-
-    return render(request, 'survey.html', {'survey': survey, 'questions': questions, 'form': form})
-
-
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
@@ -977,3 +940,20 @@ def patient_discharge(request):
 def d_discharge_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'d_discharge_patient.html',{'patients':patients})
+from django.shortcuts import render, redirect
+from .models import Survey, Question, Answer
+
+def admin_view_answers(request):
+    answers = Answer.objects.all()
+    return render(request, 'admin_view_answers.html', {'answers': answers})
+
+def admin_add_survey(request):
+    # يجب عليك إضافة المنطق الخاص بإضافة الاستبيان هنا
+    return render(request, 'admin_add_survey.html')
+
+def admin_add_questions(request):
+    # يجب عليك إضافة المنطق الخاص بإضافة الأسئلة هنا
+    return render(request, 'admin_add_questions.html')
+
+
+
