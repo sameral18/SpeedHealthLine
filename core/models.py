@@ -107,20 +107,4 @@ class Question(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=255)
 
-class Option(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    option_text = models.CharField(max_length=255)
 
-class Answer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    option = models.ForeignKey(Option, on_delete=models.CASCADE)
-    answer_text = models.TextField(default='')  # Specify a default value here
-
-    def __str__(self):
-        return f"Answer for question '{self.question.question_text}'"
-class Message(models.Model):
-    to=models.ForeignKey(User,on_delete=models.CASCADE)
-    msg_from=models.CharField(max_length=100,blank=True, null=True)
-    subject=models.CharField(max_length=100,blank=True, null=True)
-    message=models.TextField(max_length=250,blank=True, null=True)

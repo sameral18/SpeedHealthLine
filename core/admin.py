@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey, Option, Answer, Message
+from .models import Doctor, Patient, Appointment, PatientDischargeDetails, Question, Survey
 from django.contrib import admin
 from .models import Survey, Patient, Doctor
 
@@ -13,13 +13,10 @@ class PatientDischargeDetailsAdmin(admin.ModelAdmin):
 
 
 
-class OptionInline(admin.TabularInline):
-    model = Option
-    extra = 1
+
 
 class QuestionAdmin(admin.ModelAdmin):
-    inlines = [OptionInline]
-
+ pass
 class QuestionInline(admin.TabularInline):
     model = Question
     extra = 1
@@ -42,6 +39,4 @@ admin.site.register(PatientDischargeDetails, PatientDischargeDetailsAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Appointment, AppointmentAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Option)
-admin.site.register(Answer)
-admin.site.register(Message)
+

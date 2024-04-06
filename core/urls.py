@@ -89,8 +89,6 @@ urlpatterns = [
 
     path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
     path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  # Update the name here
-    path('message/', all_messagesView.as_view(), name='message'),
-    path('add-message/', add_messageView.as_view(), name='add-message'),
     path('discharge-patient/<int:pk>', discharge_patient, name='discharge-patient'),
     path('patient-discharge', patient_discharge, name='patient-discharge'),
     path('d-discharge-patient', d_discharge_patient_view, name='d-discharge-patient'),
