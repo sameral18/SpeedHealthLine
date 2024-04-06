@@ -100,5 +100,7 @@ urlpatterns = [
     path('admin-add-answers', views.admin_add_answers, name='admin-add-answers'),
     path('admin-view-survey', views.admin_view_survey, name='admin-view-survey'),
     path('admin-add-survey', views.admin_add_survey, name='admin-add-survey'),
+    path('doctor-answer-questions/<int:survey_id>/', views.doctor_answer_questions, name='doctor-answer-questions'),
+    path('patient-answer-questions/<int:survey_id>/', views.patient_answer_questions, name='patient-answer-questions'),
 
 ]
