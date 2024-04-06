@@ -1,11 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Add Survey</title>
-</head>
-<body>
-    <h1>Admin Add Survey</h1>
-    <!-- أضف نموذج إضافة الاستبيان هنا -->
-</body>
-</html>
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<h1>Add Survey</h1>
+<form method="post">
+  {% csrf_token %}
+  <label for="title">Title:</label>
+  <input type="text" name="title" id="title" required>
+  <br>
+  <label for="description">Description:</label>
+  <textarea name="description" id="description" cols="30" rows="10" required></textarea>
+  <br>
+  <button type="submit">Create Survey</button>
+</form>
+{% endblock content %}

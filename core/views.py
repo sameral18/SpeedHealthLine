@@ -948,31 +948,64 @@ from django.shortcuts import render, redirect
 from .models import Survey, Question, Answer
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
-def admin_view_answers(request):
+def admin_view_survey(request):
     answers = Answer.objects.all()
     return render(request, 'admin_view_answers.html', {'answers': answers})
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def admin_add_answers(request):
+    answers = Answer.objects.all()
+    return render(request, 'admin_view_answers.html', {'answers': answers})
+
+
+
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_add_answers(request):
+    # Logic to add doctor's answers
+    return render(request, 'doctor_add_answers.html')
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def patient_add_answers(request):
+    # Logic to add patient's answers
+    return render(request, 'patient_add_answers.html')
+
+
+
+
+
+
+
+
+
+
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_add_survey(request):
-    # إضافة المنطق الخاص بإضافة الاستبيان هنا
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
         survey = Survey.objects.create(title=title, description=description)
-        return redirect('admin-view-answers')  # افتراضياً سننتقل لصفحة عرض الإجابات للمشرف
+        survey.save()
+        return redirect('admin-add-questions', survey_id=survey.id)  # تحويل المستخدم إلى إضافة الأسئلة بعد إنشاء الاستبيان
     return render(request, 'admin_add_survey.html')
 
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
-def admin_add_questions(request):
-    # إضافة المنطق الخاص بإضافة الأسئلة هنا
+def admin_add_questions(request, survey_id):
+    survey = Survey.objects.get(id=survey_id)
     if request.method == 'POST':
-        survey_id = request.POST.get('survey_id')  # تحتاج إلى تمرير معرف الاستبيان من النموذج HTML
         question_text = request.POST.get('question_text')
-        survey = Survey.objects.get(pk=survey_id)
-        question = Question.objects.create(survey=survey, question_text=question_text)
-        return redirect('admin-view-answers')  # افتراضياً سننتقل لصفحة عرض الإجابات للمشرف
-    return render(request, 'admin_add_questions.html')
+        Question.objects.create(survey=survey, question_text=question_text)
+        # يمكنك تحديد مكان التوجيه بناءً على ما تريده
+        return redirect('admin-view-survey')  # يمكن أن يتم توجيه المستخدم إلى عرض الاستبيان أو أي مكان آخر بعد إضافة الأسئلة
 
+    return render(request, 'admin_add_questions.html', {'survey': survey})
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def admin_view_survey(request):
+    surveys = Survey.objects.all()
+    return render(request, 'admin_view_survey.html', {'surveys': surveys})

@@ -1,11 +1,20 @@
+{% extends 'admin_base.html' %}
+{% load widget_tweaks %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Add Questions</title>
+    <title>Add Questions</title>
 </head>
 <body>
-    <h1>Admin Add Questions</h1>
-    <!-- أضف نموذج إضافة الأسئلة هنا -->
+    <h1>Add Questions to Survey "{{ survey.title }}"</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="question_text">Question Text:</label><br>
+        <textarea id="question_text" name="question_text" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Add Question">
+    </form>
 </body>
 </html>
+{% endblock content %}

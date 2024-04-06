@@ -93,10 +93,12 @@ urlpatterns = [
     path('d-discharge-patient', d_discharge_patient_view, name='d-discharge-patient'),
     path('doctor-discharge-patient', doctor_view_discharge_patient_view, name='doctor-discharge-patient'),
 
-    path('doctor-add-answers', views.admin_view_answers, name='doctor-add-answers'),
-    path('patient-add-answers', views.admin_view_answers, name='patient-add-answers'),
-    path('admin-view-answers', views.admin_view_answers, name='admin-view-answers'),
+    path('doctor-add-answers', views.doctor_add_answers, name='doctor-add-answers'),
+    path('patient-add-answers', views.patient_add_answers, name='patient-add-answers'),
+
+    path('admin-add-questions/<int:survey_id>/', views.admin_add_questions, name='admin-add-questions'),
+    path('admin-add-answers', views.admin_add_answers, name='admin-add-answers'),
+    path('admin-view-survey', views.admin_view_survey, name='admin-view-survey'),
     path('admin-add-survey', views.admin_add_survey, name='admin-add-survey'),
-    path('admin-add-quistions', views.answers_add_quistions, name='admin-add-quistions'),
 
 ]

@@ -1,8 +1,25 @@
-<h1>View Survey: {{ survey.title }}</h1>
-<p>{{ survey.description }}</p>
-<h2>Questions</h2>
-<ul>
-  {% for question in questions %}
-    <li>{{ question.question_text }}</li>
-  {% endfor %}
-</ul>
+{% extends 'admin_base.html' %}
+{% block content %}
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin View Surveys</title>
+</head>
+<body>
+    <h1>Admin View Surveys</h1>
+    <ul>
+        {% for survey in surveys %}
+            <li>
+                <strong>{{ survey.title }}</strong><br>
+                Description: {{ survey.description }}<br>
+                <a href="{% url 'admin-add-questions' survey.id %}">Add Questions</a>
+            </li>
+        {% empty %}
+            <li>No surveys available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+{% endblock content %}
