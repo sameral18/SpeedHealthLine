@@ -214,7 +214,7 @@ def update_doctor(request, pk):
             return redirect('admin-view-doctor')
     return render(request, 'admin_update_doctor.html', context=mydict)
 
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_add_doctor(request):
