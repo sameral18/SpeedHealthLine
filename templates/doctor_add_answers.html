@@ -1,15 +1,33 @@
 {% extends 'doctor_base.html' %}
 {% block content %}
-{%load static%}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Doctor's Answers</title>
-</head>
-<body>
-    <h1>Add Doctor's Answers</h1>
-    <!-- Add your form to add doctor's answers -->
-</body>
-</html>
-{% endblock content %}
+<div class="container">
+    <h1>Welcome, Doctor {{ user.username }}</h1>
+    <h2>Survey List</h2>
+    <ul>
+        {% for survey_response in survey_responses %}
+            <li>
+                <h3>{{ survey_response.survey.title }}</h3>
+                <p><strong>Description:</strong> {{ survey_response.survey.description }}</p>
+                <h4>Questions:</h4>
+                <form method="post" action="{% url 'doctor-add-answer' survey_response.survey.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="survey_id" value="{{ survey_response.survey.id }}">
+                    <ul>
+                        {% for question in survey_response.questions %}
+                            <li>
+                                <h5>{{ question.question_text }}</h5>
+                                <div class="form-group">
+                                    <textarea class="form-control" id="answer_{{ question.id }}" name="answer_{{ question.id }}" rows="4" cols="50"></textarea>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="btn btn-primary">Submit Answers</button>
+                </form>
+            </li>
+        {% empty %}
+            <p>No surveys available.</p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

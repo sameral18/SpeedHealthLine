@@ -104,5 +104,7 @@ urlpatterns = [
     path('patient-answer-questions/<int:survey_id>/', views.patient_answer_questions, name='patient-answer-questions'),
     path('patient-view-surveys', views.patient_view_survey, name='patient-view-surveys'),
     path('doctor-view-surveys', views.doctor_view_survey, name='doctor-view-surveys'),
+    path('patient-add-answers/<int:survey_id>/', views.patient_add_answers, name='patient-add-answer'),
+    path('doctor-add-answers/<int:survey_id>/', views.doctor_add_answers, name='doctor-add-answer'),
 
 ]

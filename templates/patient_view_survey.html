@@ -21,12 +21,25 @@
         p {
             color: #777;
         }
-        ul {
-            margin-top: 10px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 20px;
-            padding-left: 20px;
         }
-        li {
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        ul li {
             margin-bottom: 5px;
             color: #666;
         }
@@ -34,20 +47,38 @@
 </head>
 <body>
     <h1>Patient View Surveys</h1>
-    {% for survey_response in survey_responses %}
-        <h2>{{ survey_response.survey.title }}</h2>
-        <p><strong>Description:</strong> {{ survey_response.survey.description }}</p>
-        <h3>Responses:</h3>
-        <ul>
-            {% for answer in survey_response.answers %}
-                <li>{{ answer.answer_text }}</li>
+    <table>
+        <thead>
+            <tr>
+                <th>Survey Title</th>
+                <th>Survey Description</th>
+                <th>Responses</th>
+                <th>Answer Survey</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for survey_response in survey_responses %}
+                <tr>
+                    <td>{{ survey_response.survey.title }}</td>
+                    <td>{{ survey_response.survey.description }}</td>
+                    <td>
+                        <ul>
+                            {% for answer in survey_response.answers %}
+                                <li>{{ answer.answer_text }}</li>
+                            {% empty %}
+                                <li>No responses yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td><a class="btn btn-primary btn-xs" href="{% url 'patient-answer-questions' survey_response_id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
+                </tr>
             {% empty %}
-                <li>No responses yet.</li>
+                <tr>
+                    <td colspan="4">No surveys available.</td>
+                </tr>
             {% endfor %}
-        </ul>
-    {% empty %}
-        <p>No surveys available.</p>
-    {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
 {% endblock content %}

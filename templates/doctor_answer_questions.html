@@ -1,18 +1,25 @@
+{% extends 'doctor_base.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>الإجابة على الأسئلة</title>
+    <title>Answer Survey: "{{ survey.title }}"</title>
 </head>
 <body>
-    <h1>الإجابة على الأسئلة للاستبيان "{{ survey.title }}"</h1>
-    <form method="post">
-        {% csrf_token %}
-        {% for question in questions %}
-            <label for="answer_{{ question.id }}">{{ question.question_text }}</label><br>
-            <textarea id="answer_{{ question.id }}" name="answer_{{ question.id }}" rows="4" cols="50"></textarea><br>
-        {% endfor %}
-        <input type="submit" value="تقديم الإجابات">
-    </form>
+    <div class="container">
+        <h1>Answer Survey: "{{ survey.title }}"</h1>
+        <form method="post" action="{% url 'doctor-answer-questions' survey.id %}">
+            {% csrf_token %}
+            {% for question in questions %}
+                <div class="form-group">
+                    <label for="answer_{{ question.id }}">{{ question.question_text }}</label>
+                    <textarea class="form-control" id="answer_{{ question.id }}" name="answer_{{ question.id }}" rows="4" cols="50"></textarea>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Submit Answers</button>
+        </form>
+    </div>
 </body>
 </html>
+{% endblock content %}
