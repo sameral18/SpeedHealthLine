@@ -35,7 +35,7 @@ class Patient(models.Model):
     @property
     def get_id(self):
         return self.user.id
-#doctord
+#doctor sd
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     certificate_file = models.FileField(

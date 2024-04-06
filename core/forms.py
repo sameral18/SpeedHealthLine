@@ -24,7 +24,7 @@ class AdminProfileForm(forms.ModelForm):
             'username': forms.TextInput(attrs={'maxlength': 100}),  # Set maximum length for username field
         }
 
-#
+#1
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -32,7 +32,7 @@ class DoctorUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
-##
+#1
 class DoctorForm(forms.ModelForm):
     class Meta:
         model=models.Doctor
