@@ -191,7 +191,7 @@ def delete_doctor_from_core(request, pk):
     doctor.delete()
     return redirect('admin-view-doctor')
 
-
+#update_doctor
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def update_doctor(request, pk):
