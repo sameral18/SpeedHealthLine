@@ -13,7 +13,7 @@ class AdminSigupForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
-
+#
 class AdminProfileForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)  # Make password field optional
 

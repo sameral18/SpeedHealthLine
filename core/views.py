@@ -88,7 +88,7 @@ def patientsignup(request):
         return HttpResponseRedirect('Userlogin')
     return render(request, 'patientsignup.html', context=mydict)
 
-
+#
 def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
 
@@ -103,7 +103,7 @@ def is_patient(user):
 
 
 from django.contrib.auth import logout
-
+#
 def login_user(request):
     try:
         if is_admin(request.user):
