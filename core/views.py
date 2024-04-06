@@ -240,7 +240,7 @@ def admin_add_doctor(request):
         return HttpResponseRedirect('admin-view-doctor')
     return render(request, 'admin_add_doctor.html', context=mydict)
 
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_approve_doctor(request):
