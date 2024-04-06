@@ -140,7 +140,7 @@ def logout_user(request):
 # ---------------------------------------------------------------------------------
 # ------------------------ ADMIN RELATED VIEWS START ------------------------------
 # --------------------------------------------------------
-#dashboard
+#dashboard17
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_dashboard(request):
