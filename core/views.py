@@ -940,20 +940,39 @@ def patient_discharge(request):
 def d_discharge_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'d_discharge_patient.html',{'patients':patients})
+
+
+
+
 from django.shortcuts import render, redirect
 from .models import Survey, Question, Answer
-
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
 def admin_view_answers(request):
     answers = Answer.objects.all()
     return render(request, 'admin_view_answers.html', {'answers': answers})
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
 def admin_add_survey(request):
-    # يجب عليك إضافة المنطق الخاص بإضافة الاستبيان هنا
+    # إضافة المنطق الخاص بإضافة الاستبيان هنا
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        survey = Survey.objects.create(title=title, description=description)
+        return redirect('admin-view-answers')  # افتراضياً سننتقل لصفحة عرض الإجابات للمشرف
     return render(request, 'admin_add_survey.html')
 
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
 def admin_add_questions(request):
-    # يجب عليك إضافة المنطق الخاص بإضافة الأسئلة هنا
+    # إضافة المنطق الخاص بإضافة الأسئلة هنا
+    if request.method == 'POST':
+        survey_id = request.POST.get('survey_id')  # تحتاج إلى تمرير معرف الاستبيان من النموذج HTML
+        question_text = request.POST.get('question_text')
+        survey = Survey.objects.get(pk=survey_id)
+        question = Question.objects.create(survey=survey, question_text=question_text)
+        return redirect('admin-view-answers')  # افتراضياً سننتقل لصفحة عرض الإجابات للمشرف
     return render(request, 'admin_add_questions.html')
-
 
 

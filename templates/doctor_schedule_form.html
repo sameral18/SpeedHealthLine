@@ -6,14 +6,70 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Doctor Schedule</title>
+    <!-- Include necessary CSS files for the calendar picker -->
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Style for form elements */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1>Add Doctor Schedule</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <form method="POST" enctype="multipart/form-data" id="schedule-form">
+        <!-- Input field for choosing date from calendar -->
+        <div class="form-group">
+            <label for="free_dates">Free Dates:</label>
+            <input type="text" id="free_dates" name="free_dates">
+        </div>
+        <!-- Input field for choosing time from time picker -->
+        <div class="form-group">
+            <label for="free_time">Free Time:</label>
+            <input type="text" id="free_time" name="free_time">
+        </div>
         <button type="submit">Save</button>
     </form>
+
+    <!-- Include necessary JavaScript files for the calendar picker -->
+    <script src="https://unpkg.com/flatpickr"></script>
+    <script>
+        // Initialize flatpickr for the free dates input field
+        flatpickr("#free_dates", {
+            enableTime: false, // Disable time selection
+            dateFormat: "Y-m-d", // Set date format
+            minDate: "today", // Set minimum selectable date to today
+            mode: "multiple", // Allow selecting multiple dates
+        });
+
+        // Initialize flatpickr for the time input field
+        flatpickr("#free_time", {
+            enableTime: true, // Enable time selection
+            noCalendar: true, // Disable calendar
+            dateFormat: "H:i", // Set time format
+            enableSeconds: false, // Disable seconds
+            time_24hr: true, // Use 24-hour format
+        });
+    </script>
 </body>
 </html>
-{% endblock content %}
+{% endblock content%}
