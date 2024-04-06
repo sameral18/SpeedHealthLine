@@ -13,7 +13,7 @@ departments=[('Cardiologist','Cardiologist'),
 ]
 
 
-#patint04
+#patint12
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     mobile = models.CharField(max_length=20,null=False)
@@ -35,7 +35,7 @@ class Patient(models.Model):
     @property
     def get_id(self):
         return self.user.id
-#doctor04
+#doctor12
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     certificate_file = models.FileField(
@@ -83,7 +83,7 @@ class DoctorSchedule(models.Model):
 
     def __str__(self):
         return f"Doctor: {self.doctor.first_name}, Date: {self.date}, Time: {self.time}"
-#ap
+#ap13
 class Appointment(models.Model):
     patientId = models.PositiveIntegerField(null=True, default=0)
     doctorId = models.PositiveIntegerField(null=True, default=0)
