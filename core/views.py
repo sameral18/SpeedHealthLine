@@ -131,6 +131,7 @@ def login_user(request):
         messages.error(request, 'An error occurred. Please try again.')
         logout(request)
         return render(request, 'index.html')
+#
 def logout_user(request):
     logout(request)
     return render(request, 'index.html')
