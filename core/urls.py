@@ -38,6 +38,7 @@ urlpatterns = [
     path('admin-dashboard', admin_dashboard, name='admin-dashboard'),
     path('patient-dashboard', patient_dashboard, name='patient-dashboard'),
     path('admin-doctor', admin_doctor, name='admin-doctor'),
+    #view doctor "admin"
     path('admin-view-doctor', admin_view_doctor, name='admin-view-doctor'),
     path('delete-doctor-from-core/<int:pk>', delete_doctor_from_core,
          name='delete-doctor-from-core'),
