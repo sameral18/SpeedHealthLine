@@ -717,7 +717,7 @@ def patient_doctor(request):
     patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
     return render(request, 'patient_doctor.html', {'patient': patient, 'doctors': doctors})
 
-
+#
 def search_doctor(request):
     patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
 
