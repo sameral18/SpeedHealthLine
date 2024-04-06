@@ -92,7 +92,7 @@ def patientsignup(request):
 def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
 
-
+#
 def is_doctor(user):
     return user.groups.filter(name='DOCTOR').exists()
 
@@ -103,7 +103,7 @@ def is_patient(user):
 
 
 from django.contrib.auth import logout
-##
+###
 def login_user(request):
     try:
         if is_admin(request.user):
