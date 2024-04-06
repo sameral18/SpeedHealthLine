@@ -248,7 +248,7 @@ def admin_approve_doctor(request):
     doctors = models.Doctor.objects.all().filter(status=False)
     return render(request, 'admin_approve_doctor.html', {'doctors': doctors})
 
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def approve_doctor(request, pk):
@@ -257,7 +257,7 @@ def approve_doctor(request, pk):
     doctor.save()
     return redirect(reverse('admin-approve-doctor'))
 
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def reject_doctor(request, pk):
