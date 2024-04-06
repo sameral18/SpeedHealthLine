@@ -13,7 +13,7 @@ departments=[('Cardiologist','Cardiologist'),
 ]
 
 
-#patint17
+#patint20
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     mobile = models.CharField(max_length=20,null=False)
@@ -60,7 +60,7 @@ class Doctor(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
-#doctordischargedetails
+#doctordischargedetails20
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True,default=1)
     patientName=models.CharField(max_length=40)
@@ -83,7 +83,7 @@ class DoctorSchedule(models.Model):
 
     def __str__(self):
         return f"Doctor: {self.doctor.first_name}, Date: {self.date}, Time: {self.time}"
-#ap17
+#ap20
 class Appointment(models.Model):
     patientId = models.PositiveIntegerField(null=True, default=0)
     doctorId = models.PositiveIntegerField(null=True, default=0)

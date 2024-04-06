@@ -118,7 +118,7 @@ class ContactusForm(forms.Form):
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
 
 
-#
+#20
 class DoctorScheduleForm(forms.ModelForm):
     class Meta:
         model = DoctorSchedule
