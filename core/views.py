@@ -31,7 +31,7 @@ def Userclick(request):
 
 
 
-
+#this is admin_signup view
 def admin_signup(request):
     form = forms.AdminSigupForm()
     if request.method == 'POST':

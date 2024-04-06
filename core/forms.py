@@ -5,7 +5,7 @@ from django import forms
 from .models import Doctor, DoctorSchedule, Appointment
 
 
-#for admin signup
+#for admin signup form
 class AdminSigupForm(forms.ModelForm):
     class Meta:
         model=User
