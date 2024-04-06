@@ -1038,3 +1038,27 @@ def doctor_answer_questions(request, survey_id):
         return redirect('doctor-dashboard')  # قم بتحويله إلى لوحة الأطباء أو أي صفحة أخرى
 
     return render(request, 'doctor_answer_questions.html', {'survey': survey, 'questions': questions})
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_patient)
+def patient_view_survey(request):
+    surveys = Survey.objects.all()
+    survey_responses = []
+
+    for survey in surveys:
+        answers = Answer.objects.filter(question__survey=survey)
+        survey_responses.append({'survey': survey, 'answers': answers})
+
+    return render(request, 'patient_view_survey.html', {'survey_responses': survey_responses})
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_doctor)
+def doctor_view_survey(request):
+    surveys = Survey.objects.all()
+    survey_responses = []
+
+    for survey in surveys:
+        answers = Answer.objects.filter(question__survey=survey)
+        survey_responses.append({'survey': survey, 'answers': answers})
+
+    return render(request, 'doctor_view_survey.html', {'survey_responses': survey_responses})

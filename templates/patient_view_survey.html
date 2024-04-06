@@ -1,0 +1,53 @@
+{% extends 'patient_base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient View Surveys</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            margin-top: 20px;
+            color: #555;
+        }
+        p {
+            color: #777;
+        }
+        ul {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient View Surveys</h1>
+    {% for survey_response in survey_responses %}
+        <h2>{{ survey_response.survey.title }}</h2>
+        <p><strong>Description:</strong> {{ survey_response.survey.description }}</p>
+        <h3>Responses:</h3>
+        <ul>
+            {% for answer in survey_response.answers %}
+                <li>{{ answer.answer_text }}</li>
+            {% empty %}
+                <li>No responses yet.</li>
+            {% endfor %}
+        </ul>
+    {% empty %}
+        <p>No surveys available.</p>
+    {% endfor %}
+</body>
+</html>
+{% endblock content %}
