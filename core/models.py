@@ -60,7 +60,7 @@ class Doctor(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
-
+#
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True,default=1)
     patientName=models.CharField(max_length=40)
