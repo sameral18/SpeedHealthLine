@@ -168,7 +168,7 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', context=mydict)
 
 
-# this view for sidebar click on User page
+#admin view doctor
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_doctor(request):
