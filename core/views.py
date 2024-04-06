@@ -65,7 +65,7 @@ def doctor_signup(request):
         return HttpResponseRedirect('Userlogin')
     return render(request, 'doctorsignup.html', context=mydict)
 
-
+#
 def patientsignup(request):
     userForm = forms.PatientUserForm()
     patientForm = forms.PatientForm()

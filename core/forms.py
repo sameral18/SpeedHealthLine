@@ -39,7 +39,7 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','certificate_file']
 
 
-
+#
 class PatientUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -47,6 +47,7 @@ class PatientUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+#
 class PatientForm(forms.ModelForm):
 
     class Meta:
