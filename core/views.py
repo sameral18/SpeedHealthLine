@@ -854,7 +854,7 @@ def delete_my_appointment(request, pk):
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
-#
+#58
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_view_discharge_patient_view(request):
