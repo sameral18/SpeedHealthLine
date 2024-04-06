@@ -817,7 +817,7 @@ def patient_profile(request):
 
 
 
-
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def add_doctor_schedule(request):
