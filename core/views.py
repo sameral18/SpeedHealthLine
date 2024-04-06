@@ -45,7 +45,7 @@ def admin_signup(request):
             return HttpResponseRedirect('Userlogin')
     return render(request, 'adminsignup.html', {'form': form})
 
-
+#
 def doctor_signup(request):
     userForm = forms.DoctorUserForm()
     doctorForm = forms.DoctorForm()
