@@ -13,7 +13,7 @@ departments=[('Cardiologist','Cardiologist'),
 ]
 
 
-#patint
+#patint1
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     mobile = models.CharField(max_length=20,null=False)

@@ -42,6 +42,7 @@ urlpatterns = [
     path('admin-view-doctor', admin_view_doctor, name='admin-view-doctor'),
     path('delete-doctor-from-core/<int:pk>', delete_doctor_from_core,
          name='delete-doctor-from-core'),
+#
     path('delete-patient/<int:pk>', views.delete_patient_from_core,
          name='delete-patient'),
 
