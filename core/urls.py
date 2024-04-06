@@ -55,6 +55,7 @@ urlpatterns = [
          name='admin-view-doctor-specialisation'),
     path('admin-patient', admin_patient, name='admin-patient'),
     path('admin-view-patient', admin_view_patient, name='admin-view-patient'),
+    #
     path('delete-patient-from-core/<int:pk>', delete_patient_from_core,name='delete-patient-from-core'),
     path('update-patient/<int:pk>', update_patient, name='update-patient'),
     path('admin-add-patient', admin_add_patient, name='admin-add-patient'),

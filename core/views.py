@@ -181,7 +181,7 @@ def admin_view_doctor(request):
     doctors = models.Doctor.objects.all().filter(status=True)
     return render(request, 'admin_view_doctor.html', {'doctors': doctors})
 
-#doctor delete
+#doctor03
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def delete_doctor_from_core(request, pk):
@@ -287,7 +287,7 @@ def admin_view_patient(request):
     patients = models.Patient.objects.all().filter(status=True)
     return render(request, 'admin_view_patient.html', {'patients': patients})
 
-#
+#04
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def delete_patient_from_core(request, pk):

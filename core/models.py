@@ -13,7 +13,7 @@ departments=[('Cardiologist','Cardiologist'),
 ]
 
 
-#patint1
+#patint04
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     mobile = models.CharField(max_length=20,null=False)
@@ -35,7 +35,7 @@ class Patient(models.Model):
     @property
     def get_id(self):
         return self.user.id
-#doctor01
+#doctor04
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     certificate_file = models.FileField(
