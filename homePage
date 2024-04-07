@@ -1,0 +1,59 @@
+#view:
+def home_page(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('login_user')
+    return render(request, 'index.html')
+
+#urls:
+      path('', home_page, name=''),
+
+#html:
+  {% extends 'homebase.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+  <style>
+    .jumbotron {
+      background-color: #fff; /* Set background color of Jumbotron to white */
+      margin-bottom: 0px;
+      margin-top: 0px;
+      text-align: center;
+    }
+
+    .jumbotron p {
+      color: #000; /* Set text color to black */
+    }
+
+    .btn-primary {
+      background-color: #007bff; /* Set primary button color */
+      border-color: #007bff; /* Set primary button border color */
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3; /* Set primary button color on hover */
+      border-color: #0056b3; /* Set primary button border color on hover */
+    }
+
+    .glow {
+      margin-bottom: 20px; /* Increase margin bottom for heading */
+    }
+  </style>
+</head>
+
+<br><br><br><br>
+
+<div class="jumbotron">
+  <h4 class="display-3 glow">SpeedyHealthLine</h4>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="/Userlogin" role="button">Take Appointment</a>
+  </p>
+</div>
+
+<br><br><br>
+
+{% include "admin_doctor_patient_card.html" %}
+<br><br><br>
+
+{% endblock content %}
