@@ -1,0 +1,122 @@
+#html
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey</title>
+    <style>
+        /* Add your custom CSS styles here */
+        /* Example styles */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .survey-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .survey-header {
+            background-color: #f2f2f2;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .survey-questions {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-weight: bold;
+        }
+        .answer-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>{{ survey.title }}</h1>
+            <p>{{ survey.description }}</p>
+        </div>
+        <div class="survey-questions">
+            <form method="post">
+                {% csrf_token %}
+                {% for question in questions %}
+                    <div class="question">
+                        <p class="question-text">{{ question.question_text }}</p>
+                        <input type="text" name="question_{{ question.id }}" class="answer-input">
+                    </div>
+                {% endfor %}
+                <button type="submit" class="submit-btn">Submit Answers</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock content %}
+
+#views:
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def admin_create_survey(request):
+    question_formset = formset_factory(QuestionForm)
+    if request.method == 'POST':
+        survey_form = SurveyForm(request.POST)
+        question_formset = question_formset(request.POST)
+        if survey_form.is_valid() or question_formset.is_valid():
+            survey = survey_form.save()
+            for form in question_formset:
+                question_text = form.cleaned_data.get('question_text')
+                if question_text:
+                    Question.objects.create(survey=survey, question_text=question_text)
+            return redirect('admin-show-survey', survey_id=survey.id)
+    else:
+        survey_form = SurveyForm()
+
+    return render(request, 'admin_create_survey.html', {'survey_form': survey_form, 'question_formset': question_formset})
+
+@login_required(login_url='Userlogin')
+@user_passes_test(is_admin)
+def view_survey(request, survey_id):
+    survey = get_object_or_404(Survey, id=survey_id)
+    questions = Question.objects.filter(survey=survey)
+    if request.method == 'POST':
+        form = AnswerForm(request.POST, questions=questions)
+        if form.is_valid():
+            for question in questions:
+                answer_text = form.cleaned_data.get(f'question_{question.id}')
+                if answer_text:
+                    Answer.objects.create(user=request.user, question=question, answer_text=answer_text)
+            return redirect('doctor-dashboard')
+    else:
+        form = AnswerForm(questions=questions)
+
+    return render(request, 'survey.html', {'survey': survey, 'questions': questions, 'form': form})
+
+
+#urls:
+path('admin-create-survey', admin_create_survey, name='admin-create-survey'),
+path('survey/<int:survey_id>/', view_survey, name='admin-show-survey'),  
