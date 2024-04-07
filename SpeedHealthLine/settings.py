@@ -39,10 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'widget_tweaks',
-    'crispy_forms',
-    'bootstrap4',
-    'django_bootstrap5',
-    'crispy_bootstrap5',
+
 
 ]
 
