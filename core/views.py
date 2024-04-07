@@ -14,7 +14,7 @@ from django.db.models import Q
 from .forms import AdminProfileForm, DoctorScheduleForm, \
     AnswerForm
 
-#
+#homepage
 def home_page(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('login_user')
