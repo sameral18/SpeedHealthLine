@@ -4,12 +4,12 @@
     <h1>Welcome, Doctor {{ user.username }}</h1>
     <h2>Survey List</h2>
     <ul>
-        {% for survey_response in survey_responses %}
+        {% for survey_response in questions %}
             <li>
                 <h3>{{ survey_response.survey.title }}</h3>
                 <p><strong>Description:</strong> {{ survey_response.survey.description }}</p>
                 <h4>Questions:</h4>
-                <form method="post" action="{% url 'doctor-add-answer' survey_response.survey.id %}">
+                <form method="post" action="{% url 'doctor-add-answers' survey_response.survey.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="survey_id" value="{{ survey_response.survey.id }}">
                     <ul>

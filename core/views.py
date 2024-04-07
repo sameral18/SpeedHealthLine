@@ -140,7 +140,6 @@ def logout_user(request):
 # ---------------------------------------------------------------------------------
 # ------------------------ ADMIN RELATED VIEWS START ------------------------------
 # --------------------------------------------------------
-#dashboard17
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -182,7 +181,7 @@ def admin_view_doctor(request):
     doctors = models.Doctor.objects.all().filter(status=True)
     return render(request, 'admin_view_doctor.html', {'doctors': doctors})
 
-#doctor03
+#doctor delete
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def delete_doctor_from_core(request, pk):
@@ -192,7 +191,7 @@ def delete_doctor_from_core(request, pk):
     doctor.delete()
     return redirect('admin-view-doctor')
 
-#update_doctor 1
+#update_doctor
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def update_doctor(request, pk):
@@ -281,14 +280,14 @@ def admin_doctor_specialisation(request):
 def admin_patient(request):
     return render(request, 'admin_patient.html')
 
-#
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def admin_view_patient(request):
     patients = models.Patient.objects.all().filter(status=True)
     return render(request, 'admin_view_patient.html', {'patients': patients})
 
-#04
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_admin)
 def delete_patient_from_core(request, pk):
@@ -491,7 +490,7 @@ def profile_p(request):
     doctors = models.Doctor.objects.all().filter(status=True)
     patient = models.Patient.objects.get(user_id=request.user.id)  # for profile picture of patient in sidebar
     return render(request, 'profile_p.html', {'patient': patient, 'doctors': doctors})
-#
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_view_appointment(request):
@@ -505,7 +504,7 @@ def doctor_view_appointment(request):
     appointments = zip(appointments, patients)
     return render(request, 'doctor_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
 
-#doctor
+#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_delete_appointment(request):
@@ -625,7 +624,7 @@ def download_pdf(request,pk):
     }
     return render_to_pdf('download_bill.html',dict)
 
-#20
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_dashboard(request):
@@ -664,7 +663,7 @@ from django.contrib import messages
 from .forms import PatientAppointmentForm
 from .models import Doctor, DoctorSchedule, Patient, Answer
 
-#1
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_patient)
 def patient_book_appointment(request):
@@ -818,7 +817,7 @@ def patient_profile(request):
 
 
 
-#19
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def add_doctor_schedule(request):
@@ -855,14 +854,13 @@ def delete_my_appointment(request, pk):
     patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'patient_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
-#58
+
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def doctor_view_discharge_patient_view(request):
     dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedDoctorName=request.user.first_name)
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
-#
 @login_required(login_url='Userlogin')
 @user_passes_test(is_doctor)
 def discharge_patient(request,pk):
@@ -1073,7 +1071,7 @@ def doctor_add_answers(request, survey_id):
     if request.method == 'POST':
         for question in questions:
             answer_text = request.POST.get(f'answer_{question.id}')
-            Answer.objects.create(question=question, answer_text=answer_text, answered_by=request.user)
+            Answer.objects.create(survey=survey,question=question, answer_text=answer_text)
 
         return redirect('doctor-dashboard')
 
