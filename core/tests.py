@@ -8,7 +8,6 @@ class AdminSignupTest(TestCase):
     def setUp(self):
         self.client = Client()
     def test_get_admin_signup_form(self):
-        """Test GET request to adminsignup view renders admin signup form."""
         response = self.client.get('/adminsignup')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'adminsignup.html')
