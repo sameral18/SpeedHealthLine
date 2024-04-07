@@ -1,0 +1,102 @@
+#urls:
+    path('Userclick', Userclick),
+
+
+#views:
+def Userclick(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return render(request, 'index.html')
+    return render(request, 'Userclick.html')
+
+#html:
+{% extends 'homebase.html' %}
+
+{% block content %}
+
+<br>
+<br>
+<style>
+  .fa {
+    padding: 20px;
+    font-size: 23px;
+    width: 60px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #5E8B7E, #8A2BE2); /* Apply linear gradient */
+    color: #5E8B7E; /* Set text color */
+  }
+
+  .fa:hover {
+    opacity: 0.5;
+    text-decoration: none;
+  }
+
+  p {
+    text-align: center;
+    color: #ffffff; /* Set text color to white for better contrast */
+    background: linear-gradient(to right, #a41515, #3875d7); /* Apply linear gradient */
+    padding: 20px; /* Add padding for better spacing */
+    border-radius: 5px; /* Add border radius for rounded corners */
+  }
+
+  .jumbotron {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background: linear-gradient(to right, #a41515, #3875d7); /* Apply linear gradient */
+  }
+
+  .btn {
+    background: linear-gradient(to right, #a41515, #3875d7); /* Apply linear gradient */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 2px; /* Increase margin for better spacing */
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .btn:hover {
+    background: linear-gradient(to right, #3875d7, #a41515); /* Apply linear gradient on hover */
+  }
+
+  /*.glow-text {
+    font-size: 24px; /* Adjust the font size as needed */
+    /*text-align: center;
+    margin-bottom: 20px; /* Add margin to separate from the buttons */
+    /*color: #121212; /* Change color to orange */
+    /*-webkit-animation: glow 0.5s ease-in-out infinite alternate;
+    -moz-animation: glow 0.5s ease-in-out infinite alternate;
+    animation: glow 0.5s ease-in-out infinite alternate;
+  }
+
+  @-webkit-keyframes glow {
+    from {
+      text-shadow: 0 0 10px #eeeeee, 0 0 20px #000000, 0 0 30px #000000, 0 0 40px #000000, 0 0 50px #9554b3, 0 0 60px #9554b3, 0 0 70px #9554b3;
+    }
+
+    to {
+      text-shadow: 0 0 20px #eeeeee, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+    }
+  }*/
+</style>
+<div class="jumbotron" style="margin-bottom:0px;">
+  <h3 class="glow-text">Hello</h3>
+  <hr class="my-4">
+  <p class="lead" style="font-size: 24px;">Welcome to SpeedHealthLine! Sign up now to get started:</p>
+
+  <p class="lead">
+      <a class="btn btn-primary btn-lg" href="/patientsignup" role="button">PatientSignUp</a>
+    <a class="btn btn-primary btn-lg" href="/doctorsignup" role="button">DoctorSignUp</a>
+    <a class="btn btn-primary btn-lg" href="/adminsignup" role="button">AdminSignUp</a>
+    <a class="btn btn-primary btn-lg" href="/Userlogin" role="button">Login</a>
+  </p>
+</div>
+
+{% endblock content %}
