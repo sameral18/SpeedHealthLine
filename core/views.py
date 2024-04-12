@@ -832,11 +832,6 @@ def add_doctor_schedule(request):
         form = DoctorScheduleForm()
 
     return render(request, 'doctor_schedule_form.html', {'form': form})
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.forms import formset_factory
-from .forms import SurveyForm, QuestionForm, AnswerForm
-from .models import Survey, Question
 
 
 @login_required(login_url='Userlogin')
